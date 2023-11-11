@@ -1,0 +1,99 @@
+Table contacts {
+  id int [pk]
+  phone Phone
+  email Email
+  telegram varchar(50) [default: null]
+  whatsapp varchar(50) [default: null]
+}
+
+
+Table addresses {
+  id int [pk]
+  street varchar(50)
+  city varchar(50)
+  country varchar(50)
+  postal_code varchar(50)
+  house int
+  entrance int
+  appartment int
+}
+
+
+Table suppliers {
+  id int [pk]
+  name varchar(50)
+  contacts int [ref: > contacts.id]
+  address int [ref: > addresses.id]
+}
+
+
+Table products {
+  id int [pk]
+  price numeric(10, 2)
+  product_name varchar(50)
+  description TEXT
+  suppliers_id int [ref: > suppliers.id]
+  is_for_sale bool [note: 'Выставлен или снят с продажи товар']
+}
+
+
+enum order_status {
+  CREATED
+  CONFIRMED
+  PAID
+  SENT_TO_DELIVERY
+  PICKED_UP
+  CANCELED
+}
+
+
+Table customers {
+  id int [pk]
+  first_name varchar(50)
+  last_name varchar(50)
+  contacts int [ref: > contacts.id]
+  address int [ref: > addresses.id]
+}
+
+
+Table favorite_products {
+  customer_id int [ref: > customers.id]
+  product_id int [ref: > products.id]
+
+  Note: 'Описание отношение избранных покупателем предметов'
+}
+
+
+Table orders {
+  id int [pk]
+  status order_status
+  cancel_description TEXT [default: null]
+  price numeric(10, 2)
+  product_id int [ref: > products.id]
+  creation_datetime timestamp
+  target_address int [ref: > addresses.id]
+  customer_id int [ref: > customers.id]
+}
+
+
+Table product_images {
+  id int [pk]
+  product int [ref: > products.id]
+  url TEXT
+}
+
+
+Table supplier_credentials {
+  login varchar(50)
+  password char(64) [note: "Зашифрованный через SHA256 пароль"]
+  account_id int [ref: > suppliers.id]
+}
+
+
+Table customer_credentials {
+  login varchar(50)
+  password char(64) [note: "Зашифрованный через SHA256 пароль"]
+  account_id int [ref: > customers.id]
+}
+
+
