@@ -1,3 +1,9 @@
+/*
+    Visualization of current version of schema can be
+    found at the link:
+    https://dbdiagram.io/d/marketplace-app-65400d8fffbf5169f0c27b48
+*/
+
 Table contacts {
   id int [pk]
   phone Phone
