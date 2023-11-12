@@ -1,0 +1,870 @@
+# API visualization via Swagger can be viewed at this link:
+# https://app.swaggerhub.com/apis/Nifacy/marketplace-app-api/0.0.1
+
+openapi: 3.0.0
+info:
+  title: Marketplace App
+  description: API для бэкенд части магазина заказов
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:5000'
+tags:
+  - name: Продавец
+  - name: Покупатель
+  - name: Товар
+  - name: Заказ
+paths:
+  /supplier/register/:
+    post:
+      tags:
+        - Продавец
+      summary: Регистрация продавца
+      operationId: registerSupplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierRegisterForm'
+      responses:
+        '201':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Неверный формат данных
+        '409':
+          description: Пользователь уже существует
+  /supplier/login/:
+    post:
+      tags:
+        - Продавец
+      summary: Авторизация
+      operationId: loginSupplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierCredentials'
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный логин или пароль
+  '/supplier/{id}':
+    get:
+      tags:
+        - Продавец
+      summary: Просмотр профиля
+      operationId: viewSupplierProfile
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      parameters:
+        - name: id
+          in: path
+          description: ID продавца
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+        '404':
+          description: Продавец не найден
+  /supplier/me/:
+    get:
+      tags:
+        - Продавец
+      summary: Просмотр профиля текущего пользователя
+      operationId: viewCurrentSupplierProfile
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '401':
+          description: Неверный токен
+    put:
+      tags:
+        - Продавец
+      summary: Обновление профиля текущего продавца
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierInfo'
+      responses:
+        '200':
+          description: Информация успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+  /supplier/me/product/:
+    get:
+      tags:
+        - Продавец
+      summary: 'Просмотр продуктов, которые добавил продавец'
+      operationId: viewSupplierProducts
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Неверный токен
+    post:
+      tags:
+        - Продавец
+      summary: Добавление товара на витрину
+      operationId: addProduct
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInfo'
+      responses:
+        '201':
+          description: Успешное добавление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+  '/supplier/me/product/{id}':
+    get:
+      tags:
+        - Продавец
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      summary: Просмотр товара продавца по указанному id
+      operationId: viewSupplierProduct
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Товар не найден
+    put:
+      tags:
+        - Продавец
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      summary: Обновление информации о товаре
+      operationId: updateSupplierProduct
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInfo'
+      responses:
+        '200':
+          description: Информация о товаре обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+        '404':
+          description: Товар не найден
+    delete:
+      tags:
+        - Продавец
+      summary: Снятие товара продавца с витрины
+      operationId: removeProduct
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Успешное удаление
+        '401':
+          description: Неверный токен
+        '404':
+          description: Товар не найден
+  /suppplier/me/order/:
+    get:
+      tags:
+        - Продавец
+      summary: 'Получение списка заказов, пришедших продавцу'
+      operationId: viewSupplierOrders
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Неверный токен
+  /customer/register/:
+    post:
+      tags:
+        - Покупатель
+      summary: Регистрация покупателя
+      operationId: registerCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterForm'
+      responses:
+        '201':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supplier:
+                    $ref: '#/components/schemas/Customer'
+                  token:
+                    type: string
+        '400':
+          description: Неверный формат данных
+        '409':
+          description: Пользователь уже существует
+  /customer/login/:
+    post:
+      tags:
+        - Покупатель
+      summary: Авторизация покупателя
+      operationId: loginCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCredentials'
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный логин или пароль
+  '/customer/{id}':
+    get:
+      tags:
+        - Покупатель
+      summary: Просмотр профиля
+      operationId: viewCustomerProfile
+      security:
+        - SupplierAuth:
+            - 'read:supplier'
+        - CustomerAuth:
+            - 'read:customer'
+      parameters:
+        - name: id
+          in: path
+          description: ID покупателя
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Покупатель найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+        '404':
+          description: Продавец не найден
+  /customer/me/:
+    get:
+      tags:
+        - Покупатель
+      summary: Просмотр профиля текущего покупателя
+      operationId: viewCurrentCustomerProfile
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      responses:
+        '200':
+          description: Покупатель найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          description: Неверный токен
+    put:
+      tags:
+        - Покупатель
+      summary: Обновление профиля текущего покупателя
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerInfo'
+      responses:
+        '200':
+          description: Информация успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+  /customer/me/favorite:
+    get:
+      tags:
+        - Покупатель
+      summary: Получение избранных покупателем товаров
+      operationId: getFavoriteProducts
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Неверный токен
+  '/customer/me/favorite/{id}':
+    post:
+      tags:
+        - Покупатель
+      summary: Добавление товара в "избранное"
+      operationId: addProductToFavorite
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Успешное добавление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+        '404':
+          description: Товар не найден
+    delete:
+      tags:
+        - Покупатель
+      summary: Удаление товара из "избранное"
+      operationId: removeProductFromFavorite
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Успешное удаление
+        '401':
+          description: Неверный токен
+        '404':
+          description: Товар не найден
+  /customer/me/order/:
+    get:
+      tags:
+        - Покупатель
+      summary: 'Получение списка заказов, сделанных покупателем'
+      operationId: viewCustomerOrders
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Неверный токен
+    post:
+      tags:
+        - Покупатель
+      summary: Создание заказа
+      operationId: createOrder
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateSchema'
+      responses:
+        '201':
+          description: Успешное создание заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Неверный формат данных
+        '403':
+          description: Доступ запрещен
+  /product/:
+    get:
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+        - SupplierAuth:
+            - 'read:supplier'
+      tags:
+        - Товар
+      summary: 'Просмотр всех товаров, размещенных на витрине'
+      operationId: viewProductsList
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  '/product/{id}':
+    get:
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+        - SupplierAuth:
+            - 'read:supplier'
+      tags:
+        - Товар
+      summary: Просмотр товара
+      operationId: viewProduct
+      parameters:
+        - name: id
+          in: path
+          description: ID товара
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Товар не найден
+  '/order/{id}':
+    get:
+      tags:
+        - Заказ
+      summary: Получение информации о заказе
+      operationId: viewOrder
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      parameters:
+        - name: id
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Неверный токен
+        '404':
+          description: Заказ не найден
+    put:
+      security:
+        - CustomerAuth:
+            - 'read:customer'
+      tags:
+        - Заказ
+      summary: Обновление статуса заказа
+      operationId: updateOrderStatus
+      parameters:
+        - name: id
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Неверный формат данных
+        '401':
+          description: Неверный токен
+        '404':
+          description: Заказ не найден
+components:
+  securitySchemes:
+    CustomerAuth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: 'http://localhost:5000/customer/login'
+          scopes:
+            'read:customer': Получение информации о покупателе
+    SupplierAuth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: 'http://localhost:5000/supplier/login'
+          scopes:
+            'read:supplier': Получение информации о продавце
+  schemas:
+    Contacts:
+      type: object
+      required:
+        - phone
+        - email
+      properties:
+        phone:
+          type: string
+          format: +7 (777) 777 77 77
+          example: +8 (800) 555 35 35
+        email:
+          type: string
+          format: email
+          example: myWife@left.me
+        telegram:
+          type: string
+          nullable: true
+          example: '@zzz'
+        whatsapp:
+          type: string
+          nullable: true
+          example: +8 (800) 555 35 35
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - country
+        - postal_code
+        - house
+      properties:
+        street:
+          type: string
+          example: Ивашкиной
+        city:
+          type: string
+          example: Москва
+        country:
+          type: string
+          example: Россия
+        postal_code:
+          type: string
+          example: '723047'
+        house:
+          type: integer
+          example: 14
+        entrance:
+          type: integer
+          nullable: true
+          example: 32
+        appartment:
+          type: integer
+          nullable: true
+          example: 2
+    SupplierInfo:
+      type: object
+      required:
+        - name
+        - contacts
+        - address
+      properties:
+        name:
+          type: string
+          example: ООО Бананы
+        contacts:
+          $ref: '#/components/schemas/Contacts'
+        address:
+          $ref: '#/components/schemas/Address'
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7798435764372
+        info:
+          $ref: '#/components/schemas/SupplierInfo'
+    SupplierCredentials:
+      type: object
+      properties:
+        login:
+          type: string
+          example: freddy-fazbear
+        password:
+          type: string
+          example: ur-ur-ur-ur-ur-1234$$^
+    SupplierRegisterForm:
+      type: object
+      properties:
+        credentials:
+          $ref: '#/components/schemas/SupplierCredentials'
+        info:
+          $ref: '#/components/schemas/SupplierInfo'
+    CustomerInfo:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: Алина
+        last_name:
+          type: string
+          example: Чичкина
+        contacts:
+          $ref: '#/components/schemas/Contacts'
+        address:
+          $ref: '#/components/schemas/Address'
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12345
+        info:
+          $ref: '#/components/schemas/CustomerInfo'
+    CustomerCredentials:
+      type: object
+      properties:
+        login:
+          type: string
+          example: dead-inside-332
+        password:
+          type: string
+          example: password
+    CustomerRegisterForm:
+      type: object
+      properties:
+        credentials:
+          $ref: '#/components/schemas/CustomerCredentials'
+        info:
+          $ref: '#/components/schemas/CustomerInfo'
+    ProductInfo:
+      type: object
+      required:
+        - in_favorites
+        - images
+        - price
+        - product_name
+        - description
+        - supplier
+      properties:
+        in_favorites:
+          type: boolean
+          example: false
+        images:
+          type: array
+          items:
+            type: string
+          example:
+            - 'http://example.com/images/1.jpg'
+            - 'http://example.com/images/2.jpg'
+            - 'http://example.com/images/3.jpg'
+        price:
+          type: number
+          format: float
+          example: 123.32
+        product_name:
+          type: string
+          example: Снюс
+        description:
+          type: string
+          example: 'Очень хороший, правда иногда зубы отваливаются'
+    Product:
+      type: object
+      required:
+        - id
+        - info
+        - supplier
+      properties:
+        id:
+          type: integer
+          example: 12345
+        info:
+          $ref: '#/components/schemas/ProductInfo'
+        supplier:
+          $ref: '#/components/schemas/Supplier'
+    OrderStatus:
+      type: string
+      enum:
+        - created
+        - confirmed
+        - paid
+        - sent_to_delivery
+        - picked_up
+        - canceled
+    OrderCreateSchema:
+      type: object
+      properties:
+        price:
+          type: number
+          format: float
+          example: 90.99
+        product_id:
+          type: integer
+          example: 12345
+        target_address:
+          $ref: '#/components/schemas/Address'
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12345
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        cancel_description:
+          type: string
+          nullable: true
+          example: Не захотел делать заказ
+        price:
+          type: number
+          format: float
+          example: 90.99
+        creation_datetime:
+          type: string
+          format: date-time
+          example: '2023-11-12T19:27:45Z'
+        product:
+          $ref: '#/components/schemas/Product'
+        target_address:
+          $ref: '#/components/schemas/Address'
+        customer:
+          $ref: '#/components/schemas/Customer'
