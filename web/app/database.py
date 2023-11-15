@@ -1,23 +1,18 @@
 import psycopg2
+from .config import settings
 
-# зуй хуй хуй хуй
-conn = None
-
-def initialize_database():
-    global conn
-    conn = psycopg2.connect(
-        dbname="наша-дбшка",
-        user="пидорас",
-        password="MyWifeLeftMe;(",
-        host="localhost"
-    )
-
-    # Инициализация базы данных
+def _init_db(conn):
     cur = conn.cursor()
     with open('sql/initialise.sql', 'r') as f:
         cur.execute(f.read())
     conn.commit()
 
-def close_database():
-    global conn
-    conn.close()
+def connect():
+    conn = psycopg2.connect(
+        dbname=settings.database_name,
+        user=settings.database_username,
+        password=settings.database_password,
+        host=settings.database_hostname
+    )
+    _init_db(conn)
+    return conn

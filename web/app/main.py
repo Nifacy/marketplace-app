@@ -1,28 +1,25 @@
 from fastapi import FastAPI, HTTPException
-from .database import initialize_database, close_database
+from .database import connect
 from .schemas import Supplier
 import psycopg2
 
 
 app = FastAPI()
-conn = None # она ещё в database.py есть
-# Я не понял рофла, куда её кидать, так что я в оба добавил, питон сложный аааааааа
-# мб импортить надо, но я не хочу пачкаться
+conn = None
 
 
 @app.router.on_startup
 async def startup():
     global conn
-    conn = initialize_database()
+    conn = connect()
 
 
 @app.router.on_shutdown
 async def shutdown():
-    close_database()
+    global conn
+    conn.close()
 
 
-# хз, пример, как эта шняга выглядить может, скажи, норм/не норм
-# я перекину это в routers, очев, но пока здесь, чтоб посмотреть
 def create_supplier(conn: psycopg2.extensions.connection, supplier: Supplier) -> None:
     cur = conn.cursor()
 
@@ -52,16 +49,15 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
 async def create_supplier_endpoint(supplier: Supplier):
     try:
         create_supplier(conn, supplier)
-    # Я только хз, насчет формата исключений, аааааа
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     return supplier.model_dump()
 
+
 @app.get("/suppliers/{supplier_id}", response_model=Supplier)
 async def get_supplier_endpoint(supplier_id: int):
-    try:
-        supplier = get_supplier(conn, supplier_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
+    supplier = get_supplier(conn, supplier_id)
+    if not supplier:
+        raise HTTPException(status_code=404, detail=f'Supplier not found')
+    return supplier.model_dump()
