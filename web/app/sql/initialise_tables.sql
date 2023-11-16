@@ -9,33 +9,33 @@ CREATE TABLE contacts (
   phone public.phone,
   email public.email,
   telegram VARCHAR(50)
-); -- Убрал запятую
+);
 
 CREATE TABLE addresses (
   id SERIAL PRIMARY KEY,
-  street VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  city VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  country VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  postal_code VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  house INT NOT NULL, -- Добавил NOT NULL
+  street VARCHAR(50) NOT NULL,
+  city VARCHAR(50) NOT NULL,
+  country VARCHAR(50) NOT NULL,
+  postal_code VARCHAR(50) NOT NULL,
+  house INT NOT NULL,
   entrance INT,
   appartment INT
 );
 
 CREATE TABLE suppliers (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE, -- Добавил NOT NULL
-  contacts INT NOT NULL REFERENCES contacts(id), -- Добавил NOT NULL
-  address INT NOT NULL REFERENCES addresses(id) -- Добавил NOT NULL
+  name VARCHAR(50) NOT NULL UNIQUE,
+  contacts INT NOT NULL REFERENCES contacts(id),
+  address INT NOT NULL REFERENCES addresses(id)
 );
 
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
-  price NUMERIC(10, 2) NOT NULL, -- Добавил NOT NULL
-  product_name VARCHAR(50) NOT NULL, -- Добавил NOT NULL
+  price NUMERIC(10, 2) NOT NULL,
+  product_name VARCHAR(50) NOT NULL,
   description TEXT,
-  suppliers_id INT NOT NULL REFERENCES suppliers(id), -- Добавил NOT NULL
-  is_for_sale BOOLEAN NOT NULL -- Добавил NOT NULL
+  suppliers_id INT NOT NULL REFERENCES suppliers(id),
+  is_for_sale BOOLEAN NOT NULL
 );
 
 CREATE TYPE order_status AS ENUM (
@@ -49,42 +49,42 @@ CREATE TYPE order_status AS ENUM (
 
 CREATE TABLE customers (
   id SERIAL PRIMARY KEY,
-  first_name VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  last_name VARCHAR(50) NOT NULL, -- Добавил NOT NULL
-  contacts INT NOT NULL REFERENCES contacts(id), -- Добавил NOT NULL
-  address INT NOT NULL REFERENCES addresses(id) -- Добавил NOT NULL
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  contacts INT NOT NULL REFERENCES contacts(id),
+  address INT NOT NULL REFERENCES addresses(id)
 );
 
 CREATE TABLE favorite_products (
-  customer_id INT NOT NULL REFERENCES customers(id), -- Добавил NOT NULL
-  product_id INT NOT NULL REFERENCES products(id) -- Добавил NOT NULL
+  customer_id INT NOT NULL REFERENCES customers(id),
+  product_id INT NOT NULL REFERENCES products(id)
 );
 
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
-  status order_status NOT NULL, -- Добавил NOT NULL
+  status order_status NOT NULL,
   cancel_description TEXT,
-  price NUMERIC(10, 2) NOT NULL, -- Добавил NOT NULL
-  product_id INT NOT NULL REFERENCES products(id), -- Добавил NOT NULL
-  creation_datetime TIMESTAMP NOT NULL, -- Добавил NOT NULL
-  target_address INT NOT NULL REFERENCES addresses(id), -- Добавил NOT NULL
-  customer_id INT NOT NULL REFERENCES customers(id) -- Добавил NOT NULL
+  price NUMERIC(10, 2) NOT NULL,
+  product_id INT NOT NULL REFERENCES products(id),
+  creation_datetime TIMESTAMP NOT NULL,
+  target_address INT NOT NULL REFERENCES addresses(id),
+  customer_id INT NOT NULL REFERENCES customers(id)
 );
 
 CREATE TABLE product_images (
   id SERIAL PRIMARY KEY,
-  product INT NOT NULL REFERENCES products(id), -- Добавил NOT NULL
-  url TEXT NOT NULL -- Добавил NOT NULL
+  product INT NOT NULL REFERENCES products(id),
+  url TEXT NOT NULL
 );
 
 CREATE TABLE supplier_credentials (
-  login VARCHAR(50) NOT NULL UNIQUE, -- Добавил NOT NULL и UNIQUE
-  password CHAR(64) NOT NULL, -- Добавил NOT NULL
-  account_id INT NOT NULL REFERENCES suppliers(id) -- Добавил NOT NULL
+  login VARCHAR(50) NOT NULL UNIQUE,
+  password CHAR(64) NOT NULL,
+  account_id INT NOT NULL REFERENCES suppliers(id)
 );
 
 CREATE TABLE customer_credentials (
-  login VARCHAR(50) NOT NULL UNIQUE, -- Добавил NOT NULL и UNIQUE
-  password CHAR(64) NOT NULL, -- Добавил NOT NULL
-  account_id INT NOT NULL REFERENCES customers(id) -- Добавил NOT NULL
+  login VARCHAR(50) NOT NULL UNIQUE,
+  password CHAR(64) NOT NULL,
+  account_id INT NOT NULL REFERENCES customers(id)
 );
