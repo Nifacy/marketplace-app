@@ -1,9 +1,6 @@
 # API visualization via Swagger can be viewed at this link:
 # https://app.swaggerhub.com/apis/Nifacy/marketplace-app-api/0.0.1
 
-# API visualization via Swagger can be viewed at this link:
-# https://app.swaggerhub.com/apis/Nifacy/marketplace-app-api/0.0.1
-
 openapi: 3.0.0
 info:
   title: Marketplace App
