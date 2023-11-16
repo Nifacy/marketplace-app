@@ -1,6 +1,9 @@
 # API visualization via Swagger can be viewed at this link:
 # https://app.swaggerhub.com/apis/Nifacy/marketplace-app-api/0.0.1
 
+# API visualization via Swagger can be viewed at this link:
+# https://app.swaggerhub.com/apis/Nifacy/marketplace-app-api/0.0.1
+
 openapi: 3.0.0
 info:
   title: Marketplace App
@@ -69,9 +72,6 @@ paths:
         - Продавец
       summary: Просмотр профиля
       operationId: viewSupplierProfile
-      security:
-        - SupplierAuth:
-            - 'read:supplier'
       parameters:
         - name: id
           in: path
@@ -340,11 +340,6 @@ paths:
         - Покупатель
       summary: Просмотр профиля
       operationId: viewCustomerProfile
-      security:
-        - SupplierAuth:
-            - 'read:supplier'
-        - CustomerAuth:
-            - 'read:customer'
       parameters:
         - name: id
           in: path
@@ -526,6 +521,12 @@ paths:
             - 'read:supplier'
       tags:
         - Товар
+      parameters:
+        - name: name
+          in: query
+          description: подстрока в имени товара
+          schema:
+            type: string
       summary: 'Просмотр всех товаров, размещенных на витрине'
       operationId: viewProductsList
       responses:
@@ -779,16 +780,12 @@ components:
     ProductInfo:
       type: object
       required:
-        - in_favorites
         - images
         - price
         - product_name
         - description
         - supplier
       properties:
-        in_favorites:
-          type: boolean
-          example: false
         images:
           type: array
           items:
@@ -811,12 +808,16 @@ components:
       type: object
       required:
         - id
+        - in_favorites
         - info
         - supplier
       properties:
         id:
           type: integer
           example: 12345
+        in_favorites:
+          type: boolean
+          example: false
         info:
           $ref: '#/components/schemas/ProductInfo'
         supplier:
