@@ -1,12 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from .database import connect
 from .schemas import Supplier
-import psycopg2
-
-
-class SupplierNotFound(Exception):
-    pass
-
+from .usecases import get_supplier #, create_supplier
 
 app = FastAPI()
 conn = None
@@ -23,44 +18,15 @@ async def shutdown():
     global conn
     conn.close()
 
+# TODO: check if can be changed to be used, and remove if not
+# @app.post("/suppliers/", response_model=Supplier)
+# async def create_supplier_endpoint(supplier: Supplier):
+#     try:
+#         create_supplier(conn, supplier)
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=str(e))
 
-def create_supplier(conn: psycopg2.extensions.connection, supplier: Supplier) -> None:
-    cur = conn.cursor()
-
-    args = {**supplier.model_dump(), **supplier.address.model_dump()}
-    args.pop('address')
-
-    cur.callproc('sql.add_supplier', tuple(args.values()))
-
-    conn.commit()
-    cur.close()
-
-
-def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supplier:
-    cur = conn.cursor()
-
-    cur.callproc('sql.get_supplier', (supplier_id,))
-
-    supplier = cur.fetchone()
-
-    conn.commit()
-    cur.close()
-
-    if supplier is None:
-        raise SupplierNotFound()
-
-    return Supplier(**supplier)
-
-
-
-@app.post("/suppliers/", response_model=Supplier)
-async def create_supplier_endpoint(supplier: Supplier):
-    try:
-        create_supplier(conn, supplier)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return supplier
+#     return supplier
 
 
 @app.get("/suppliers/{supplier_id}", response_model=Supplier)
