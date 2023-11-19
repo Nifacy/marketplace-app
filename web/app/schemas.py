@@ -2,20 +2,18 @@ from pydantic import BaseModel, EmailStr, validator
 import re
 
 class Address(BaseModel):
-    id: int
     street: str
     city: str
     country: str
     postal_code: str
     house: int
-    entrance: int
-    appartment: int
+    entrance: int | None = None
+    appartment: int | None = None
 
 class Contact(BaseModel):
-    id: int
     phone: str
     email: EmailStr
-    telegram: str = None
+    telegram: str | None = None
 
     @validator('phone')
     def validate_phone(cls, v):
