@@ -1,22 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from .database import connect
 from .schemas import Supplier
 from .usecases import get_supplier #, create_supplier
 
-app = FastAPI()
+
 conn = None
-
-
-@app.router.on_startup
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global conn
     conn = connect()
-
-
-@app.router.on_shutdown
-async def shutdown():
-    global conn
+    yield
     conn.close()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/suppliers/{supplier_id}", response_model=Supplier)
