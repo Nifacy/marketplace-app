@@ -1,6 +1,6 @@
 import psycopg2.extras
 import psycopg2
-from app.schemas import Customer
+from app.schemas import Customer, CustomerInfo
 from ._exceptions import *
 from ._address import get_address, create_address
 from ._contact import get_contact, create_contact
@@ -20,12 +20,15 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
     if customer_data is None:
         raise CustomerNotFound()
     
-    customer = Customer(
-        id=customer_data[0],
+    customer_info = CustomerInfo(
         first_name=customer_data[1],
         last_name=customer_data[2],
         contacts=contacts,
         address=address
+    )
+    customer = Customer(
+        id=customer_data[0],
+        info=customer_info
     )
 
     conn.commit()
@@ -37,10 +40,10 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
 def create_customer(conn: psycopg2.extensions.connection, customer: Customer) -> None:
     cur = conn.cursor()
 
-    address_id = create_address(conn, customer.address)
-    contact_id = create_contact(conn, customer.contacts)
+    address_id = create_address(conn, customer.info.address)
+    contact_id = create_contact(conn, customer.info.contacts)
 
-    cur.callproc('create_customer', (customer.id, customer.first_name, customer.last_name, contact_id, address_id))
+    cur.callproc('create_customer', (customer.id, customer.info.first_name, customer.info.last_name, contact_id, address_id))
 
     conn.commit()
     cur.close()

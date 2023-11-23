@@ -29,16 +29,25 @@ class Contact(BaseModel):
             raise ValueError('Invalid telegram handle')
         return v
 
+
+class SupplierInfo(BaseModel):
+    name: str
+    contacts: Contact
+    address: Address
+
+
 class Supplier(BaseModel):
     id: int
-    name: str
+    info: SupplierInfo
+
+
+class CustomerInfo(BaseModel):
+    first_name: str
+    last_name: str
     contacts: Contact
     address: Address
 
 
 class Customer(BaseModel):
     id: int
-    first_name: str
-    last_name: str
-    contacts: Contact
-    address: Address
+    info: CustomerInfo
