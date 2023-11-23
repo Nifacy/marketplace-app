@@ -17,14 +17,14 @@ class Contact(BaseModel):
 
     @validator('phone')
     def validate_phone(cls, v):
-        pattern = '^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$'
+        pattern = r'^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$'
         if not re.match(pattern, v):
             raise ValueError('Invalid phone number')
         return v
 
     @validator('telegram')
     def validate_telegram(cls, v):
-        pattern = '^@[a-zA-Z0-9_]{5,}$'
+        pattern = r'^@[a-zA-Z0-9_]{5,}$'
         if v is not None and not re.match(pattern, v):
             raise ValueError('Invalid telegram handle')
         return v
