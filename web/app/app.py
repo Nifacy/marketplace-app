@@ -20,7 +20,10 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/suppliers/{supplier_id}", response_model=Supplier)
 async def get_supplier_endpoint(supplier_id: int):
+    global conn
     supplier = get_supplier(conn, supplier_id)
+    
     if not supplier:
         raise HTTPException(status_code=404, detail=f'Supplier not found')
+    
     return supplier
