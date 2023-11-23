@@ -24,3 +24,23 @@ def get_contact(conn: psycopg2.extensions.connection, contact_id: int) -> Contac
     cur.close()
 
     return contact
+
+
+def create_contact(conn: psycopg2.extensions.connection, contact: Contact) -> int:
+    cur = conn.cursor()
+
+    cur.callproc(
+        'create_contact', 
+        (
+            contact.phone, 
+            contact.email, 
+            contact.telegram
+            )
+        )
+
+    contact_id = cur.fetchone()[0]
+
+    conn.commit()
+    cur.close()
+
+    return contact_id

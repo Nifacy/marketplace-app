@@ -30,3 +30,27 @@ def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Addres
     cur.close()
 
     return address
+
+
+def create_address(conn: psycopg2.extensions.connection, address: Address) -> int:
+    cur = conn.cursor()
+
+    cur.callproc(
+        'create_address', 
+        (
+            address.street, 
+            address.city, 
+            address.country, 
+            address.postal_code, 
+            address.house, 
+            address.entrance, 
+            address.appartment
+            )
+        )
+
+    address_id = cur.fetchone()[0]
+
+    conn.commit()
+    cur.close()
+
+    return address_id

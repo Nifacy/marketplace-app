@@ -8,3 +8,7 @@ class ContactNotFound(Exception):
 
 class SupplierNotFound(Exception):
     pass
+
+
+class CustomerNotFound(Exception):
+    pass

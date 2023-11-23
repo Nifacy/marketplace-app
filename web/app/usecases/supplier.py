@@ -2,8 +2,8 @@ import psycopg2.extras
 import psycopg2
 from app.schemas import Supplier
 from ._exceptions import *
-from ._address import get_address
-from ._contact import get_contact
+from ._address import get_address, create_address
+from ._contact import get_contact, create_contact
 
 
 def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supplier:
@@ -29,4 +29,17 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
 
     conn.commit()
     cur.close()
+    
     return supplier
+
+
+def create_supplier(conn: psycopg2.extensions.connection, supplier: Supplier) -> None:
+    cur = conn.cursor()
+
+    address_id = create_address(conn, supplier.address)
+    contact_id = create_contact(conn, supplier.contacts)
+
+    cur.callproc('create_supplier', (supplier.id, supplier.name, contact_id, address_id))
+
+    conn.commit()
+    cur.close()

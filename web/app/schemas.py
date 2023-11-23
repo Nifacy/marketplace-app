@@ -34,3 +34,11 @@ class Supplier(BaseModel):
     name: str
     contacts: Contact
     address: Address
+
+
+class Customer(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    contacts: Contact
+    address: Address
