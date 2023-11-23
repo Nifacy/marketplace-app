@@ -3,7 +3,7 @@ import psycopg2
 from app.schemas import Customer, CustomerInfo
 from ._exceptions import *
 from ._address import get_address, create_address
-from ._contact import get_contact, create_contact
+from ._contacts import get_contacts, create_contacts
 
 
 def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Customer:
@@ -11,10 +11,10 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
 
     cur.callproc('get_customer', (customer_id,))
 
-    # 0 - id; 1 - first_name; 2 - last_name; 3 - contact; 4 - address
+    # 0 - id; 1 - first_name; 2 - last_name; 3 - contacts; 4 - address
     customer_data = cur.fetchone()
 
-    contacts = get_contact(conn, customer_data[3])
+    contacts = get_contacts(conn, customer_data[3])
     address = get_address(conn, customer_data[4])
 
     if customer_data is None:
@@ -36,12 +36,20 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
     return customer
 
 
-def create_customer(conn: psycopg2.extensions.connection, customer: Customer) -> None:
+def create_customer(conn: psycopg2.extensions.connection, customer_info: CustomerInfo) -> None:
     cur = conn.cursor()
 
-    address_id = create_address(conn, customer.info.address)
-    contact_id = create_contact(conn, customer.info.contacts)
+    address_id = create_address(conn, customer_info.address)
+    contacts_id = create_contacts(conn, customer_info.contacts)
 
-    cur.callproc('create_customer', (customer.id, customer.info.first_name, customer.info.last_name, contact_id, address_id))
+    cur.callproc(
+        'create_customer', 
+        (
+            customer_info.first_name, 
+            customer_info.last_name, 
+            contacts_id, 
+            address_id
+        )
+    )
 
     cur.close()

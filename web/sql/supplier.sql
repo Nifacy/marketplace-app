@@ -11,13 +11,20 @@ END; $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_supplier(
-    p_id INT,
     p_name VARCHAR(50),
     p_contacts INT,
     p_address INT
-) RETURNS VOID AS $$
+) RETURNS VOID AS $$ -- Не уверен нужно будет ретурнить id. Оставлю здесь комментарий.
 BEGIN
-    INSERT INTO suppliers(id, name, contacts, address)
-    VALUES (p_id, p_name, p_contacts, p_address);
+    INSERT INTO suppliers(
+        name, 
+        contacts, 
+        address
+    )
+    VALUES (
+        p_name, 
+        p_contacts, 
+        p_address
+    );
 END; $$
 LANGUAGE plpgsql;

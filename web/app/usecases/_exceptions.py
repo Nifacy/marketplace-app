@@ -2,7 +2,7 @@ class AddressNotFound(Exception):
     pass
 
 
-class ContactNotFound(Exception):
+class ContactsNotFound(Exception):
     pass
 
 

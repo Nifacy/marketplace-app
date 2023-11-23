@@ -10,7 +10,7 @@ class Address(BaseModel):
     entrance: int | None = None
     appartment: int | None = None
 
-class Contact(BaseModel):
+class Contacts(BaseModel):
     phone: str
     email: EmailStr
     telegram: str | None = None
@@ -32,7 +32,7 @@ class Contact(BaseModel):
 
 class SupplierInfo(BaseModel):
     name: str
-    contacts: Contact
+    contacts: Contacts
     address: Address
 
 
@@ -44,7 +44,7 @@ class Supplier(BaseModel):
 class CustomerInfo(BaseModel):
     first_name: str
     last_name: str
-    contacts: Contact
+    contacts: Contacts
     address: Address
 
 

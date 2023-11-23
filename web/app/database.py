@@ -5,7 +5,7 @@ from app.config import settings
 def _init_db(conn):
     cur = conn.cursor()
 
-    files = ['sql/initialise.sql', 'sql/address.sql', 'sql/contact.sql', 'sql/supplier.sql']
+    files = ['sql/initialise.sql', 'sql/address.sql', 'sql/contacts.sql', 'sql/supplier.sql']
 
     for file in files:
         with open(file, 'r') as f:

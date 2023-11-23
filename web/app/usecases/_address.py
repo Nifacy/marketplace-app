@@ -17,14 +17,14 @@ def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Addres
         raise AddressNotFound()
 
     address = Address(
-            street=address_data[1],
-            city=address_data[2],
-            country=address_data[3],
-            postal_code=address_data[4],
-            house=address_data[5],
-            entrance=address_data[6],
-            appartment=address_data[7],
-        )
+        street=address_data[1],
+        city=address_data[2],
+        country=address_data[3],
+        postal_code=address_data[4],
+        house=address_data[5],
+        entrance=address_data[6],
+        appartment=address_data[7],
+    )
 
     cur.close()
 
@@ -44,10 +44,13 @@ def create_address(conn: psycopg2.extensions.connection, address: Address) -> in
             address.house, 
             address.entrance, 
             address.appartment
-            )
         )
+    )
 
     address_id = cur.fetchone()[0]
+
+    if address_id is None:
+        raise AddressNotFound()
 
     cur.close()
 

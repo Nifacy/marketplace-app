@@ -3,7 +3,7 @@ import psycopg2
 from app.schemas import Supplier, SupplierInfo
 from ._exceptions import *
 from ._address import get_address, create_address
-from ._contact import get_contact, create_contact
+from ._contacts import get_contacts, create_contacts
 
 
 def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supplier:
@@ -11,10 +11,10 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
 
     cur.callproc('get_supplier', (supplier_id,))
 
-    # 0 - id; 1 - name; 2 - contact; 3 - address
+    # 0 - id; 1 - name; 2 - contacts; 3 - address
     supplier_data = cur.fetchone()
 
-    contacts = get_contact(conn, supplier_data[2])
+    contacts = get_contacts(conn, supplier_data[2])
     address = get_address(conn, supplier_data[3])
 
     if supplier_data is None:
@@ -35,12 +35,21 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
     return supplier
 
 
-def create_supplier(conn: psycopg2.extensions.connection, supplier: Supplier) -> None:
+def create_supplier_info(conn: psycopg2.extensions.connection, supplier_info: SupplierInfo) -> None:
     cur = conn.cursor()
 
-    address_id = create_address(conn, supplier.info.address)
-    contact_id = create_contact(conn, supplier.info.contacts)
+    address_id = create_address(conn, supplier_info.address)
+    contacts_id = create_contacts(conn, supplier_info.contacts)
 
-    cur.callproc('create_supplier', (supplier.id, supplier.info.name, contact_id, address_id))
+    cur.callproc(
+        'create_supplier_info', 
+        (
+            supplier_info.name, 
+            contacts_id, 
+            address_id
+        )
+    )
 
     cur.close()
+
+    # Продолжение неуверенности в supplier_id.

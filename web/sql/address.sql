@@ -15,7 +15,6 @@ END; $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_address(
-    p_id INT,
     p_street VARCHAR(50),
     p_city VARCHAR(50),
     p_country VARCHAR(50),
@@ -23,9 +22,28 @@ CREATE OR REPLACE FUNCTION create_address(
     p_house INT,
     p_entrance INT,
     p_appartment INT
-) RETURNS VOID AS $$
+) RETURNS INT AS $$
+DECLARE
+    v_new_id INT;
 BEGIN
-    INSERT INTO addresses(id, street, city, country, postal_code, house, entrance, appartment)
-    VALUES (p_id, p_street, p_city, p_country, p_postal_code, p_house, p_entrance, p_appartment);
+    INSERT INTO addresses(
+        street, 
+        city, 
+        country, 
+        postal_code, 
+        house, entrance, 
+        appartment
+    )
+    VALUES (
+        p_street, 
+        p_city, 
+        p_country, 
+        p_postal_code, 
+        p_house, 
+        p_entrance, 
+        p_appartment)
+    RETURNING id INTO v_new_id;
+
+    RETURN v_new_id;
 END; $$
 LANGUAGE plpgsql;
