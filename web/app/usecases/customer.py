@@ -31,7 +31,6 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
         info=customer_info
     )
 
-    conn.commit()
     cur.close()
 
     return customer
@@ -45,5 +44,4 @@ def create_customer(conn: psycopg2.extensions.connection, customer: Customer) ->
 
     cur.callproc('create_customer', (customer.id, customer.info.first_name, customer.info.last_name, contact_id, address_id))
 
-    conn.commit()
     cur.close()

@@ -11,7 +11,6 @@ def _init_db(conn):
         with open(file, 'r') as f:
             cur.execute(f.read())
 
-    conn.commit()
     cur.close()
 
 

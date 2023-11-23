@@ -26,7 +26,6 @@ def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Addres
             appartment=address_data[7],
         )
 
-    conn.commit()
     cur.close()
 
     return address
@@ -50,7 +49,6 @@ def create_address(conn: psycopg2.extensions.connection, address: Address) -> in
 
     address_id = cur.fetchone()[0]
 
-    conn.commit()
     cur.close()
 
     return address_id

@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from app.database import connect
 from app.schemas import Supplier
-from app.usecases.usecases import get_supplier #, create_supplier
+from app.usecases.supplier import get_supplier #, create_supplier
 
 
 conn = None

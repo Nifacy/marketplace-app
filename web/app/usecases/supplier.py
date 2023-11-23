@@ -30,7 +30,6 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
         info=supplier_info
     )
 
-    conn.commit()
     cur.close()
 
     return supplier
@@ -44,5 +43,4 @@ def create_supplier(conn: psycopg2.extensions.connection, supplier: Supplier) ->
 
     cur.callproc('create_supplier', (supplier.id, supplier.info.name, contact_id, address_id))
 
-    conn.commit()
     cur.close()
