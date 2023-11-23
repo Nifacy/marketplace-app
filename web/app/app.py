@@ -1,15 +1,16 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from app.database import connect
-from app.schemas import Supplier
-from app.usecases.supplier import get_supplier #, create_supplier
 
+from app import database
+from app.schemas import Supplier
+from app.usecases.supplier import get_supplier
 
 conn = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global conn
-    conn = connect()
+    conn = database.connect(database.from_settings)
     yield
     conn.close()
 
