@@ -1,9 +1,7 @@
-from ast import Add
-from audioop import add
 import psycopg2.extras
 import psycopg2
 from app.schemas import Address
-from ._exceptions import AddressNotFound
+from ._exceptions import AddressNotFound, UnableToCreateAddress
 
 
 def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Address:
@@ -17,16 +15,41 @@ def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Addres
         raise AddressNotFound()
 
     address = Address(
-            street=address_data[1],
-            city=address_data[2],
-            country=address_data[3],
-            postal_code=address_data[4],
-            house=address_data[5],
-            entrance=address_data[6],
-            appartment=address_data[7],
-        )
+        street=address_data[1],
+        city=address_data[2],
+        country=address_data[3],
+        postal_code=address_data[4],
+        house=address_data[5],
+        entrance=address_data[6],
+        appartment=address_data[7],
+    )
 
-    conn.commit()
     cur.close()
 
     return address
+
+
+def create_address(conn: psycopg2.extensions.connection, address: Address) -> int:
+    cur = conn.cursor()
+
+    cur.callproc(
+        'create_address', 
+        (
+            address.street, 
+            address.city, 
+            address.country, 
+            address.postal_code, 
+            address.house, 
+            address.entrance, 
+            address.appartment
+        )
+    )
+
+    address_id = cur.fetchone()[0]
+
+    if address_id is None:
+        raise UnableToCreateAddress()
+
+    cur.close()
+
+    return address_id

@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 
-from . import database
-from .schemas import Supplier
-from .usecases import get_supplier
+from app import database
+from app.schemas import Supplier
+from app.usecases.supplier import get_supplier
 
 conn = None
 

@@ -10,7 +10,7 @@ class Address(BaseModel):
     entrance: int | None = None
     appartment: int | None = None
 
-class Contact(BaseModel):
+class Contacts(BaseModel):
     phone: str
     email: EmailStr
     telegram: str | None = None
@@ -29,8 +29,25 @@ class Contact(BaseModel):
             raise ValueError('Invalid telegram handle')
         return v
 
+
+class SupplierInfo(BaseModel):
+    name: str
+    contacts: Contacts
+    address: Address
+
+
 class Supplier(BaseModel):
     id: int
-    name: str
-    contacts: Contact
+    info: SupplierInfo
+
+
+class CustomerInfo(BaseModel):
+    first_name: str
+    last_name: str
+    contacts: Contacts
     address: Address
+
+
+class Customer(BaseModel):
+    id: int
+    info: CustomerInfo
