@@ -31,11 +31,18 @@ def create_supplier_sample() -> SupplierInfo:
 
 
 def test_supplier_creation(db_connection):
-    expected_supplier = create_supplier_sample()
-    supplier_id = supplier.create_supplier(db_connection, expected_supplier)
-    _supplier = supplier.get_supplier(db_connection, supplier_id)
+    expected_supplier_info = create_supplier_sample()
+    created_supplier = supplier.create_supplier(db_connection, expected_supplier_info)
 
-    assert _supplier.info == expected_supplier
+    assert created_supplier.info == expected_supplier_info
+
+
+def test_supplier_getable_after_creation(db_connection):
+    expected_supplier_info = create_supplier_sample()
+    created_supplier = supplier.create_supplier(db_connection, expected_supplier_info)
+    found_supplier = supplier.get_supplier(db_connection, created_supplier.id)
+
+    assert created_supplier == found_supplier
 
 
 def test_supplier_not_found(db_connection):

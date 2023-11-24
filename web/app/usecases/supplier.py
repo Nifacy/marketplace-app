@@ -35,7 +35,7 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
     return supplier
 
 
-def create_supplier(conn: psycopg2.extensions.connection, supplier_info: SupplierInfo) -> int:
+def create_supplier(conn: psycopg2.extensions.connection, supplier_info: SupplierInfo) -> Supplier:
     cur = conn.cursor()
 
     address_id = create_address(conn, supplier_info.address)
@@ -56,4 +56,4 @@ def create_supplier(conn: psycopg2.extensions.connection, supplier_info: Supplie
     if supplier_id is None:
         raise UnableToCreateSupplier()
 
-    return supplier_id[0]
+    return get_supplier(conn, supplier_id[0])

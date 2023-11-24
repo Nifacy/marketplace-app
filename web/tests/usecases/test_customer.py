@@ -32,11 +32,18 @@ def create_customer_sample() -> CustomerInfo:
 
 
 def test_customer_creation(db_connection):
-    expected_customer = create_customer_sample()
-    customer_id = customer.create_customer(db_connection, expected_customer)
-    _customer = customer.get_customer(db_connection, customer_id)
+    expected_customer_info = create_customer_sample()
+    created_customer = customer.create_customer(db_connection, expected_customer_info)
+    
+    assert created_customer.info == expected_customer_info
 
-    assert _customer.info == expected_customer
+
+def test_customer_getable_after_creation(db_connection):
+    expected_customer_info = create_customer_sample()
+    created_customer = customer.create_customer(db_connection, expected_customer_info)
+    found_customer = customer.get_customer(db_connection, created_customer.id)
+
+    assert created_customer == found_customer
 
 
 def test_customer_not_found(db_connection):
