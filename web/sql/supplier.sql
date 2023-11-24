@@ -14,7 +14,9 @@ CREATE OR REPLACE FUNCTION create_supplier(
     p_name VARCHAR(50),
     p_contacts INT,
     p_address INT
-) RETURNS VOID AS $$ -- Не уверен нужно будет ретурнить id. Оставлю здесь комментарий.
+) RETURNS INT AS $$ -- Не уверен нужно будет ретурнить id. Оставлю здесь комментарий.
+DECLARE
+    v_supplier_id INT;
 BEGIN
     INSERT INTO suppliers(
         name, 
@@ -25,6 +27,9 @@ BEGIN
         p_name, 
         p_contacts, 
         p_address
-    );
+    )
+    RETURNING id INTO v_supplier_id;
+
+    RETURN v_supplier_id;
 END; $$
 LANGUAGE plpgsql;
