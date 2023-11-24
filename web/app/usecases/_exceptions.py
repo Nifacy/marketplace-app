@@ -2,7 +2,15 @@ class AddressNotFound(Exception):
     pass
 
 
+class UnableToCreateAddress(Exception):
+    pass
+
+
 class ContactsNotFound(Exception):
+    pass
+
+
+class UnableToCreateContacts(Exception):
     pass
 
 

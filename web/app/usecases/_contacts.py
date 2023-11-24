@@ -1,7 +1,7 @@
 import psycopg2.extras
 import psycopg2
 from app.schemas import Contacts
-from ._exceptions import *
+from ._exceptions import ContactsNotFound, UnableToCreateContacts
 
 
 def get_contacts(conn: psycopg2.extensions.connection, contacts_id: int) -> Contacts:
@@ -39,7 +39,7 @@ def create_contacts(conn: psycopg2.extensions.connection, contacts: Contacts) ->
 
     response = cur.fetchone()
     if response is None:
-        raise ContactsNotFound()
+        raise UnableToCreateContacts()
 
     contacts_id = response[0]
     cur.close()

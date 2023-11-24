@@ -36,7 +36,7 @@ def test_customer_creation(db_connection):
     customer_id = customer.create_customer(db_connection, expected_customer)
     _customer = customer.get_customer(db_connection, customer_id)
 
-    assert _customer == expected_customer
+    assert _customer.info == expected_customer
 
 
 def test_customer_not_found(db_connection):

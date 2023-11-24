@@ -16,7 +16,9 @@ CREATE OR REPLACE FUNCTION create_customer(
     p_last_name VARCHAR(50),
     p_contacts INT,
     p_address INT
-) RETURNS VOID AS $$
+) RETURNS INT AS $$
+DECLARE
+    v_customer_id INT;
 BEGIN
     INSERT INTO customers(
         first_name, 
@@ -29,6 +31,9 @@ BEGIN
         p_last_name, 
         p_contacts, 
         p_address
-    );
+    )
+    RETURNING id INTO v_customer_id;
+
+    RETURN v_customer_id;
 END; $$
 LANGUAGE plpgsql;
