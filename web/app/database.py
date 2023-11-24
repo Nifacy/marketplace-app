@@ -7,7 +7,13 @@ from . import config
 def _init_db(conn: connection) -> None:
     cur = conn.cursor()
 
-    files = ['sql/initialise.sql', 'sql/address.sql', 'sql/contacts.sql', 'sql/supplier.sql']
+    files = [
+        'sql/initialise.sql',
+        'sql/address.sql',
+        'sql/contacts.sql',
+        'sql/supplier.sql',
+        'sql/customer.sql',
+    ]
 
     for file in files:
         with open(file, 'r') as f:
