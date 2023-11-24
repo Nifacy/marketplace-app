@@ -36,7 +36,7 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
     return customer
 
 
-def create_customer(conn: psycopg2.extensions.connection, customer_info: CustomerInfo) -> int:
+def create_customer(conn: psycopg2.extensions.connection, customer_info: CustomerInfo) -> Customer:
     cur = conn.cursor()
 
     address_id = create_address(conn, customer_info.address)
@@ -58,4 +58,4 @@ def create_customer(conn: psycopg2.extensions.connection, customer_info: Custome
     if response is None:
         raise UnableToCreateCustomer()
     
-    return response[0]
+    return get_customer(conn, response[0])
