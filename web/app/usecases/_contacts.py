@@ -7,7 +7,7 @@ from ._exceptions import *
 def get_contacts(conn: psycopg2.extensions.connection, contacts_id: int) -> Contacts:
     cur = conn.cursor()
 
-    cur.callproc('get_contact', (contacts_id,))
+    cur.callproc('get_contacts', (contacts_id,))
 
     contacts_data = cur.fetchone()
 
@@ -29,7 +29,7 @@ def create_contacts(conn: psycopg2.extensions.connection, contacts: Contacts) ->
     cur = conn.cursor()
 
     cur.callproc(
-        'create_contact', 
+        'create_contacts', 
         (
             contacts.phone, 
             contacts.email, 
@@ -37,11 +37,11 @@ def create_contacts(conn: psycopg2.extensions.connection, contacts: Contacts) ->
         )
     )
 
-    contacts_id = cur.fetchone()[0]
+    response = cur.fetchone()
+    if response is None:
+        raise ContactsNotFound()
 
-    if contacts_id is None:
-        raise ContactNotFound()
-
+    contacts_id = response[0]
     cur.close()
 
     return contacts_id
