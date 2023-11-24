@@ -85,8 +85,6 @@ paths:
                 $ref: '#/components/schemas/Supplier'
         '400':
           description: Неверный формат данных
-        '401':
-          description: Неверный токен
         '404':
           description: Продавец не найден
   /supplier/me/:
@@ -353,8 +351,6 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '400':
           description: Неверный формат данных
-        '401':
-          description: Неверный токен
         '404':
           description: Продавец не найден
   /customer/me/:
@@ -518,12 +514,6 @@ paths:
             - 'read:supplier'
       tags:
         - Товар
-      parameters:
-        - name: name
-          in: query
-          description: подстрока в имени товара
-          schema:
-            type: string
       summary: 'Просмотр всех товаров, размещенных на витрине'
       operationId: viewProductsList
       responses:
@@ -777,12 +767,16 @@ components:
     ProductInfo:
       type: object
       required:
+        - in_favorites
         - images
         - price
         - product_name
         - description
         - supplier
       properties:
+        in_favorites:
+          type: boolean
+          example: false
         images:
           type: array
           items:
@@ -805,16 +799,12 @@ components:
       type: object
       required:
         - id
-        - in_favorites
         - info
         - supplier
       properties:
         id:
           type: integer
           example: 12345
-        in_favorites:
-          type: boolean
-          example: false
         info:
           $ref: '#/components/schemas/ProductInfo'
         supplier:
