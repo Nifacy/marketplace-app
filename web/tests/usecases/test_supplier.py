@@ -35,7 +35,7 @@ def test_supplier_creation(db_connection):
     supplier_id = supplier.create_supplier(db_connection, expected_supplier)
     _supplier = supplier.get_supplier(db_connection, supplier_id)
 
-    assert _supplier == expected_supplier
+    assert _supplier.info == expected_supplier
 
 
 def test_supplier_not_found(db_connection):
