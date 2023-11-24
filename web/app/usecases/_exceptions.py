@@ -10,5 +10,13 @@ class SupplierNotFound(Exception):
     pass
 
 
+class UnableToCreateSupplier(Exception):
+    pass
+
+
 class CustomerNotFound(Exception):
+    pass
+
+
+class UnableToCreateCustomer(Exception):
     pass
