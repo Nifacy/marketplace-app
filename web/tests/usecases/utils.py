@@ -1,6 +1,6 @@
 import itertools
 from typing import Callable, TypeVar
-from app.schemas import Address, Contacts, SupplierInfo, CustomerInfo
+from app import schemas
 
 _T = TypeVar('_T')
 
@@ -13,15 +13,15 @@ def with_counter(func: Callable[..., _T]) -> Callable[..., _T]:
     return wrapper
 
 @with_counter
-def create_supplier_info_sample(count: int) -> SupplierInfo:
-    return SupplierInfo(
+def create_supplier_info_sample(count: int) -> schemas.SupplierInfo:
+    return schemas.SupplierInfo(
         name=f'test-supplier-{count}',
-        contacts=Contacts(
+        contacts=schemas.Contacts(
             phone='+1 (123) 456-7890',
             email='test.email@mail.com',
             telegram='@testsupplier',
         ),
-        address=Address(
+        address=schemas.Address(
             street='Street',
             city='Moscow',
             country='Russia',
@@ -33,16 +33,16 @@ def create_supplier_info_sample(count: int) -> SupplierInfo:
     )
 
 @with_counter
-def create_customer_info_sample(count: int) -> CustomerInfo:
-    return CustomerInfo(
+def create_customer_info_sample(count: int) -> schemas.CustomerInfo:
+    return schemas.CustomerInfo(
         first_name=f'customer-{count}',
         last_name='last-name',
-        contacts=Contacts(
+        contacts=schemas.Contacts(
             phone='+1 (123) 456-7890',
             email='test.email@mail.com',
             telegram='@testsupplier',
         ),
-        address=Address(
+        address=schemas.Address(
             street='Street',
             city='Moscow',
             country='Russia',
@@ -51,4 +51,17 @@ def create_customer_info_sample(count: int) -> CustomerInfo:
             entrance=1,
             appartment=1,
         )
+    )
+
+@with_counter
+def create_product_info_sample(count: int, supplier: schemas.Supplier) -> schemas.ProductInfo:
+    return schemas.ProductInfo(
+        images=[
+            f'http://example{count}.com',
+            f'http://example{count + 1}.com',
+        ],
+        price=100.82,
+        product_name=f'Product #{count}',
+        description='some description here...',
+        supplier=supplier,
     )
