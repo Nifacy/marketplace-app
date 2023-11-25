@@ -23,7 +23,7 @@ BEGIN
     p.suppliers_id
   FROM products p
   WHERE (p_product_id IS NULL OR p.id = p_product_id)
-    AND (p_name IS NULL OR p.product_name = p_name)
+    AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
     AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id);
 END; $$
 LANGUAGE plpgsql;
