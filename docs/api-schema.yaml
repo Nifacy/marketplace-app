@@ -767,16 +767,12 @@ components:
     ProductInfo:
       type: object
       required:
-        - in_favorites
         - images
         - price
         - product_name
         - description
         - supplier
       properties:
-        in_favorites:
-          type: boolean
-          example: false
         images:
           type: array
           items:
@@ -795,20 +791,23 @@ components:
         description:
           type: string
           example: 'Очень хороший, правда иногда зубы отваливаются'
+        supplier:
+          $ref: '#/components/schemas/Supplier'
     Product:
       type: object
       required:
         - id
+        - in_favorites
         - info
-        - supplier
       properties:
         id:
           type: integer
           example: 12345
+        in_favorites:
+          type: boolean
+          example: false
         info:
           $ref: '#/components/schemas/ProductInfo'
-        supplier:
-          $ref: '#/components/schemas/Supplier'
     OrderStatus:
       type: string
       enum:
