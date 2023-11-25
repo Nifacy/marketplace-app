@@ -31,6 +31,64 @@ def test_product_getable_after_creation(db_connection):
     assert created_product == found_product
 
 
-def test_products_not_found(db_connection):
-    products = product.get_products(db_connection, product.SearchFilters(1))
-    assert len(products) == 0
+def test_products_search_filters(db_connection):
+    _first_supplier = supplier.create_supplier(
+        db_connection,
+        utils.create_supplier_info_sample(),
+    )
+
+    _second_supplier = supplier.create_supplier(
+        db_connection,
+        utils.create_supplier_info_sample(),
+    )
+
+    products_info = [
+        utils.create_product_info_sample(_first_supplier, product_name='a-1'),
+        utils.create_product_info_sample(_first_supplier, product_name='a-2'),
+        utils.create_product_info_sample(_second_supplier, product_name='b-1'),
+        utils.create_product_info_sample(_second_supplier, product_name='b-2'),
+        utils.create_product_info_sample(_second_supplier, product_name='b-3'),
+    ]
+
+    products = [
+        product.create_product(db_connection, product_info)
+        for product_info in products_info
+    ]
+
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(products[0].id),
+    ) == [products[0]]
+    
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(owner_id=_first_supplier.id),
+    ) == products[:2]
+    
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(
+            product_id=products[0].id,
+            owner_id=_second_supplier.id,
+        ),
+    ) == []
+    
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(name='a'),
+    ) == products[:2]
+    
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(name='b'),
+    ) == products[2:]
+    
+    assert product.get_products(
+        db_connection,
+        product.SearchFilters(name='-'),
+    ) == products
+    
+    assert product.get_products(
+        db_connection, 
+        product.SearchFilters(),
+    ) == products
