@@ -30,10 +30,20 @@ class Contacts(BaseModel):
         return v
 
 
+class SupplierCredentials(BaseModel):
+    login: str
+    password: str
+
+
 class SupplierInfo(BaseModel):
     name: str
     contacts: Contacts
     address: Address
+
+
+class SupplierRegisterForm(BaseModel):
+    credentials: SupplierCredentials
+    info: SupplierInfo
 
 
 class Supplier(BaseModel):

@@ -1,6 +1,6 @@
 import psycopg2.extras
 import psycopg2
-from app.schemas import Supplier, SupplierInfo
+from app.schemas import Supplier, SupplierInfo, SupplierRegisterForm, SupplierCredentials
 from ._exceptions import *
 from ._address import get_address, create_address
 from ._contacts import get_contacts, create_contacts
@@ -57,3 +57,37 @@ def create_supplier(conn: psycopg2.extensions.connection, supplier_info: Supplie
         raise UnableToCreateSupplier()
 
     return get_supplier(conn, supplier_id[0])
+
+
+def register_supplier(conn: psycopg2.extensions.connection, supplier_form: SupplierRegisterForm) -> Supplier:
+    cur = conn.cursor()
+    
+    cur.execute("SELECT COUNT(*) FROM supplier_credentials WHERE login = %s", (supplier_form.credentials.login,))
+    if cur.fetchone()[0] is not None:
+        raise SupplierAlreadyExists()
+    
+    supplier = create_supplier(conn, supplier_form.info)
+    
+    cur.callproc('register_supplier', (supplier_form.credentials.login, supplier_form.credentials.password))
+    login = cur.fetchone()[0]
+    cur.close()
+    
+    if not login:
+        cur.callproc('delete_supplier', (supplier.id,))
+        raise UnableToCreateSupplier()
+    
+    return supplier
+
+
+
+def login_supplier(conn: psycopg2.extensions.connection, credentials: SupplierCredentials) -> Supplier:
+    cur = conn.cursor()
+    
+    cur.callproc('login_supplier', (credentials.login, credentials.password))
+    supplier_id = cur.fetchone()[0]
+    cur.close()
+    
+    if supplier_id is None:
+        raise InvalidCredentials()
+    
+    return get_supplier(conn, supplier_id)

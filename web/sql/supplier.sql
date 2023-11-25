@@ -33,3 +33,42 @@ BEGIN
     RETURN v_supplier_id;
 END; $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION login_supplier(username TEXT, password TEXT)
+RETURNS INT AS $$
+DECLARE
+    account_id INT;
+BEGIN
+    SELECT account_id 
+    FROM supplier_credentials 
+    WHERE login = login_supplier.username AND password = crypt(login_supplier.password, password) 
+    INTO account_id;
+    RETURN account_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION register_supplier(username TEXT, password TEXT)
+RETURNS BOOLEAN AS $$
+DECLARE
+    supplier_id INT;
+BEGIN
+    -- Проверяем, существует ли уже учетная запись с таким именем пользователя
+    supplier_id := login_supplier(username, password);
+    IF supplier_id IS NOT NULL THEN
+        RETURN FALSE;
+    END IF;
+    
+    -- Если нет, создаем новую учетную запись
+    supplier_id := nextval('suppliers_id_seq');
+    INSERT INTO supplier_credentials (login, password, account_id) 
+    VALUES (register_supplier.username, crypt(register_supplier.password, gen_salt('bf', 8)), supplier_id);
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_supplier(supplier_id INT)
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM suppliers WHERE id = supplier_id;
+END;
+$$ LANGUAGE plpgsql;

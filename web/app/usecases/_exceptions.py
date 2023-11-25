@@ -18,6 +18,9 @@ class SupplierNotFound(Exception):
     pass
 
 
+class SupplierAlreadyExists(Exception):
+    pass
+
 class UnableToCreateSupplier(Exception):
     pass
 
@@ -27,4 +30,8 @@ class CustomerNotFound(Exception):
 
 
 class UnableToCreateCustomer(Exception):
+    pass
+
+
+class InvalidCredentials(Exception):
     pass
