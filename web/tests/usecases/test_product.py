@@ -23,11 +23,14 @@ def test_product_getable_after_creation(db_connection):
     )
     product_info = utils.create_product_info_sample(_supplier)
     created_product = product.create_product(db_connection, product_info)
-    found_product = product.get_product(db_connection, created_product.id)
+    found_product, = product.get_products(
+        db_connection,
+        product.SearchFilters(created_product.id),
+    )
 
     assert created_product == found_product
 
 
-def test_product_not_found(db_connection):
-    with pytest.raises(product.ProductNotFound):
-        product.get_product(db_connection, 1)
+def test_products_not_found(db_connection):
+    products = product.get_products(db_connection, product.SearchFilters(1))
+    assert len(products) == 0

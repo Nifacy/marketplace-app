@@ -1,4 +1,9 @@
-CREATE OR REPLACE FUNCTION get_product(p_product_id INT)
+-- TODO: Move logic of building product object in separate function 
+CREATE OR REPLACE FUNCTION get_products(
+    p_product_id   INTEGER DEFAULT NULL,
+    p_name         TEXT DEFAULT NULL,
+    p_owner_id     INTEGER DEFAULT NULL
+)
 RETURNS TABLE (
     id INT,
     images TEXT[],
@@ -8,18 +13,18 @@ RETURNS TABLE (
     supplier_id INT
 ) AS $$
 BEGIN
-    RETURN QUERY
-    SELECT 
-        p.id,
-        ARRAY(SELECT url FROM product_images WHERE product = p.id),
-        p.price,
-        p.product_name,
-        p.description,
-        p.suppliers_id
-    FROM 
-        products p
-    WHERE 
-        p.id = p_product_id;
+  RETURN QUERY
+  SELECT 
+    p.id,
+    ARRAY(SELECT url FROM product_images WHERE product = p.id),
+    p.price,
+    p.product_name,
+    p.description,
+    p.suppliers_id
+  FROM products p
+  WHERE (p_product_id IS NULL OR p.id = p_product_id)
+    AND (p_name IS NULL OR p.product_name = p_name)
+    AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id);
 END; $$
 LANGUAGE plpgsql;
 

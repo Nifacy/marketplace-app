@@ -1,33 +1,54 @@
-import psycopg2.extras
+from dataclasses import dataclass
+import itertools
+
 import psycopg2
+import psycopg2.extensions
+
 from app.schemas import Product, ProductInfo
-from ._exceptions import ProductNotFound, UnableToCreateProduct
+from ._exceptions import UnableToCreateProduct
 from . import supplier
 
 
-def get_product(conn: psycopg2.extensions.connection, product_id: int) -> Product:
-    cur = conn.cursor()
+@dataclass(frozen=True)
+class SearchFilters:
+    product_id: int | None = None
+    name: str | None = None
+    owner_id: int | None = None
 
-    cur.callproc('get_product', (product_id,))
-    response = cur.fetchone()
-    
-    if response is None:
-        raise ProductNotFound()
 
-    owner = supplier.get_supplier(conn, response[5])
-    cur.close()
-
+def _deserialize_build(record, owner) -> Product:
     return Product(
-        id=response[0],
+        id=record[0],
         in_favorites=False,
         info=ProductInfo(
-            images=response[1],
-            price=response[2],
-            product_name=response[3],
-            description=response[4],
+            images=record[1],
+            price=record[2],
+            product_name=record[3],
+            description=record[4],
             supplier=owner,
-        ),
+        )
     )
+
+
+def get_products(conn: psycopg2.extensions.connection, filters: SearchFilters) -> list[Product]:
+    cur = conn.cursor()
+    cur.callproc('get_products', (
+        filters.product_id,
+        filters.name,
+        filters.owner_id,
+    ))
+
+    found_records = cur.fetchall()
+    cur.close()
+
+    products = []
+    grouped_records = itertools.groupby(found_records, key=lambda record: record[5])
+
+    for owner_id, group in grouped_records:
+        owner = supplier.get_supplier(conn, owner_id)
+        products.extend(_deserialize_build(record, owner) for record in group)
+
+    return products
 
 
 def create_product(conn: psycopg2.extensions.connection, product_info: ProductInfo) -> Product:
@@ -50,4 +71,4 @@ def create_product(conn: psycopg2.extensions.connection, product_info: ProductIn
     if product_id is None:
         raise UnableToCreateProduct()
 
-    return get_product(conn, product_id[0])
+    return get_products(conn, SearchFilters(product_id=product_id))[0]
