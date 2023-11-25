@@ -28,3 +28,11 @@ class CustomerNotFound(Exception):
 
 class UnableToCreateCustomer(Exception):
     pass
+
+
+class UnableToCreateProduct(Exception):
+    pass
+
+
+class ProductNotFound(Exception):
+    pass
