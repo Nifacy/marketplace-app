@@ -514,6 +514,12 @@ paths:
             - 'read:supplier'
       tags:
         - Товар
+      parameters:
+        - name: name
+          in: query
+          description: Подстрока в названии товара
+          schema:
+            type: string
       summary: 'Просмотр всех товаров, размещенных на витрине'
       operationId: viewProductsList
       responses:
