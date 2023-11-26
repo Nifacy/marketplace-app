@@ -73,3 +73,42 @@ BEGIN
     RETURN v_product_id;
 END; $$
 LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION update_product(
+    p_id INT,
+    p_price NUMERIC(10, 2),
+    p_product_name VARCHAR(50),
+    p_description TEXT,
+    p_images TEXT[]
+) RETURNS TEXT AS $$
+DECLARE
+    v_product_exists BOOLEAN;
+BEGIN
+    -- check, if product exists
+    SELECT EXISTS(SELECT 1 FROM products WHERE id = p_id) INTO v_product_exists;
+    IF NOT v_product_exists THEN
+        RETURN 'error: product not exists';
+    END IF;
+
+    -- update product's info
+    UPDATE products
+    SET price = p_price,
+        product_name = p_product_name,
+        description = p_description
+    WHERE id = p_id;
+
+    -- delete old images
+    DELETE FROM product_images WHERE product = p_id;
+
+    -- add new images
+    FOR i IN 1 .. array_length(p_images, 1)
+    LOOP
+        INSERT INTO product_images (product, url)
+        VALUES (p_id, p_images[i]);
+    END LOOP;
+
+    RETURN 'ok';
+END;
+$$
+LANGUAGE plpgsql;

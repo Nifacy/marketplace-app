@@ -1,6 +1,7 @@
 import pytest
 
 from app.usecases import supplier, product
+from app.schemas import ProductInfo
 
 from . import utils
 
@@ -92,3 +93,32 @@ def test_products_search_filters(db_connection):
         db_connection, 
         product.SearchFilters(),
     ) == products
+
+
+def test_product_update(db_connection):
+    _supplier = supplier.create_supplier(
+        db_connection,
+        utils.create_supplier_info_sample(),
+    )
+
+    product_info = utils.create_product_info_sample(_supplier)
+    _product = product.create_product(db_connection, product_info)
+
+    with pytest.raises(product.ProductNotFound):
+        product.update_product(db_connection, -1, _product.info)
+
+    _product.info = ProductInfo(
+        product_name='changed-product-name',
+        description='changed-description',
+        images=['http://changed-url-1.com', 'http://changed-url-2.com'],
+        price=23.33,
+        supplier=_supplier,
+    )
+    
+    product.update_product(db_connection, _product.id, _product.info)
+    updated_product = product.get_products(
+        db_connection,
+        product.SearchFilters(product_id=_product.id),
+    )[0]
+
+    assert _product == updated_product

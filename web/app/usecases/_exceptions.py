@@ -36,3 +36,7 @@ class UnableToCreateProduct(Exception):
 
 class ProductNotFound(Exception):
     pass
+
+
+class UnableToUpdateProduct(Exception):
+    pass
