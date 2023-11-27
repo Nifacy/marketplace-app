@@ -1,6 +1,6 @@
 import pytest
 
-from app.schemas import SupplierInfo, Address, Contacts
+from app.schemas import SupplierInfo, Address, Contacts, SupplierRegisterForm, SupplierCredentials
 from app.usecases import supplier
 
 
@@ -53,8 +53,8 @@ def test_supplier_not_found(db_connection):
 
 
 def test_supplier_exists_after_registration(db_connection):
-    supplier_form = schemas.SupplierRegisterForm(
-        credentials=schemas.SupplierCredentials(
+    supplier_form = SupplierRegisterForm(
+        credentials=SupplierCredentials(
             login="supplier",
             password="123",
         ),
@@ -68,12 +68,12 @@ def test_supplier_exists_after_registration(db_connection):
 
 
 def test_can_login_after_success_registration(db_connection):
-    supplier_credentials = schemas.SupplierCredentials(
+    supplier_credentials = SupplierCredentials(
         login="supplier",
         password="123",
     )
 
-    supplier_form = schemas.SupplierRegisterForm(
+    supplier_form = SupplierRegisterForm(
         credentials=supplier_credentials,
         info=create_supplier_sample(),
     )
@@ -85,12 +85,12 @@ def test_can_login_after_success_registration(db_connection):
 
 
 def test_cant_register_already_exists_supplier(db_connection):
-    supplier_credentials = schemas.SupplierCredentials(
+    supplier_credentials = SupplierCredentials(
         login="supplier",
         password="123",
     )
 
-    supplier_form = schemas.SupplierRegisterForm(
+    supplier_form = SupplierRegisterForm(
         credentials=supplier_credentials,
         info=create_supplier_sample(),
     )
@@ -102,7 +102,7 @@ def test_cant_register_already_exists_supplier(db_connection):
 
 
 def test_cant_login_if_supplier_not_exists(db_connection):
-    supplier_credentials = schemas.SupplierCredentials(
+    supplier_credentials = SupplierCredentials(
         login="not-exists-supplier",
         password="123",
     )
