@@ -50,3 +50,52 @@ def test_supplier_not_found(db_connection):
         supplier.get_supplier(db_connection, 1)
 
     db_connection.close()
+
+
+def test_supplier_exists_after_registration(db_connection):
+    supplier_form = schemas.SupplierRegisterForm(
+        credentials=schemas.SupplierCredentials(
+            login="supplier",
+            password="123",
+        ),
+        info=create_supplier_sample(),
+    )
+
+    created_supplier = supplier.register_supplier(db_connection, supplier_form)
+    found_supplier = supplier.get_supplier(db_connection, created_supplier.id)
+
+    assert created_supplier == found_supplier
+
+
+def test_can_login_after_success_registration(db_connection):
+    supplier_credentials = schemas.SupplierCredentials(
+        login="supplier",
+        password="123",
+    )
+
+    supplier_form = schemas.SupplierRegisterForm(
+        credentials=supplier_credentials,
+        info=create_supplier_sample(),
+    )
+
+    created_supplier = supplier.register_supplier(db_connection, supplier_form)
+    authorised_supplier = supplier.login_supplier(db_connection, supplier_credentials)
+
+    assert created_supplier == authorised_supplier
+
+
+def test_cant_register_already_exists_supplier(db_connection):
+    supplier_credentials = schemas.SupplierCredentials(
+        login="supplier",
+        password="123",
+    )
+
+    supplier_form = schemas.SupplierRegisterForm(
+        credentials=supplier_credentials,
+        info=create_supplier_sample(),
+    )
+
+    supplier.register_supplier(db_connection, supplier_form)
+
+    with pytest.raises(supplier.SupplierAlreadyExists):
+        supplier.register_supplier(db_connection, supplier_form)
