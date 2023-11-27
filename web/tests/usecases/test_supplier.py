@@ -99,3 +99,13 @@ def test_cant_register_already_exists_supplier(db_connection):
 
     with pytest.raises(supplier.SupplierAlreadyExists):
         supplier.register_supplier(db_connection, supplier_form)
+
+
+def test_cant_login_if_supplier_not_exists(db_connection):
+    supplier_credentials = schemas.SupplierCredentials(
+        login="not-exists-supplier",
+        password="123",
+    )
+
+    with pytest.raises(supplier.InvalidCredentials):
+        supplier.login_supplier(db_connection, supplier_credentials)
