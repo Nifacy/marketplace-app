@@ -777,7 +777,6 @@ components:
         - price
         - product_name
         - description
-        - supplier
       properties:
         images:
           type: array
@@ -797,14 +796,13 @@ components:
         description:
           type: string
           example: 'Очень хороший, правда иногда зубы отваливаются'
-        supplier:
-          $ref: '#/components/schemas/Supplier'
     Product:
       type: object
       required:
         - id
         - in_favorites
         - info
+        - supplier
       properties:
         id:
           type: integer
@@ -814,6 +812,8 @@ components:
           example: false
         info:
           $ref: '#/components/schemas/ProductInfo'
+        supplier:
+          $ref: '#/components/schemas/Supplier'
     OrderStatus:
       type: string
       enum:
