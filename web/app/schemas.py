@@ -58,7 +58,6 @@ class ProductInfo(BaseModel):
     price: float
     product_name: str
     description: str
-    supplier: Supplier
 
     @validator('price')
     def validate_price(cls, v):
@@ -81,4 +80,5 @@ class ProductInfo(BaseModel):
 class Product(BaseModel):
     id: int
     in_favorites: bool
+    supplier: Supplier
     info: ProductInfo

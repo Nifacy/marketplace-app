@@ -4,7 +4,7 @@ import itertools
 import psycopg2
 import psycopg2.extensions
 
-from app.schemas import Product, ProductInfo
+from app.schemas import Product, ProductInfo, Supplier
 from ._exceptions import UnableToCreateProduct, ProductNotFound, UnableToUpdateProduct
 from . import supplier
 
@@ -25,8 +25,8 @@ def _deserialize_build(record, owner) -> Product:
             price=record[2],
             product_name=record[3],
             description=record[4],
-            supplier=owner,
-        )
+        ),
+        supplier=owner,
     )
 
 
@@ -66,7 +66,7 @@ def get_products(conn: psycopg2.extensions.connection, filters: SearchFilters) -
     return products
 
 
-def create_product(conn: psycopg2.extensions.connection, product_info: ProductInfo) -> Product:
+def create_product(conn: psycopg2.extensions.connection, supplier: Supplier, product_info: ProductInfo) -> Product:
     cur = conn.cursor()
 
     cur.callproc(
@@ -76,7 +76,7 @@ def create_product(conn: psycopg2.extensions.connection, product_info: ProductIn
             product_info.product_name,
             product_info.price,
             product_info.description,
-            product_info.supplier.id,
+            supplier.id,
         )
     )
 

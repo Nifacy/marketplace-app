@@ -11,8 +11,8 @@ def test_product_creation(db_connection):
         db_connection,
         utils.create_supplier_info_sample(),
     )
-    product_info = utils.create_product_info_sample(_supplier)
-    _product = product.create_product(db_connection, product_info)
+    product_info = utils.create_product_info_sample()
+    _product = product.create_product(db_connection, _supplier, product_info)
 
     assert _product.info == product_info
 
@@ -22,8 +22,8 @@ def test_product_getable_after_creation(db_connection):
         db_connection,
         utils.create_supplier_info_sample(),
     )
-    product_info = utils.create_product_info_sample(_supplier)
-    created_product = product.create_product(db_connection, product_info)
+    product_info = utils.create_product_info_sample()
+    created_product = product.create_product(db_connection, _supplier, product_info)
     found_product, = product.get_products(
         db_connection,
         product.SearchFilters(created_product.id),
@@ -44,16 +44,16 @@ def test_products_search_filters(db_connection):
     )
 
     products_info = [
-        utils.create_product_info_sample(_first_supplier, product_name='a-1'),
-        utils.create_product_info_sample(_first_supplier, product_name='a-2'),
-        utils.create_product_info_sample(_second_supplier, product_name='b-1'),
-        utils.create_product_info_sample(_second_supplier, product_name='b-2'),
-        utils.create_product_info_sample(_second_supplier, product_name='b-3'),
+        (_first_supplier, utils.create_product_info_sample(product_name='a-1')),
+        (_first_supplier, utils.create_product_info_sample(product_name='a-2')),
+        (_second_supplier, utils.create_product_info_sample(product_name='b-1')),
+        (_second_supplier, utils.create_product_info_sample(product_name='b-2')),
+        (_second_supplier, utils.create_product_info_sample(product_name='b-3')),
     ]
 
     products = [
-        product.create_product(db_connection, product_info)
-        for product_info in products_info
+        product.create_product(db_connection, _supplier, product_info)
+        for _supplier, product_info in products_info
     ]
 
     assert product.get_products(
@@ -101,8 +101,8 @@ def test_product_update(db_connection):
         utils.create_supplier_info_sample(),
     )
 
-    product_info = utils.create_product_info_sample(_supplier)
-    _product = product.create_product(db_connection, product_info)
+    product_info = utils.create_product_info_sample()
+    _product = product.create_product(db_connection, _supplier, product_info)
 
     with pytest.raises(product.ProductNotFound):
         product.update_product(db_connection, -1, _product.info)

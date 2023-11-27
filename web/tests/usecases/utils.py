@@ -54,7 +54,7 @@ def create_customer_info_sample(count: int) -> schemas.CustomerInfo:
     )
 
 @with_counter
-def create_product_info_sample(count: int, supplier: schemas.Supplier, **kwargs) -> schemas.ProductInfo:
+def create_product_info_sample(count: int, **kwargs) -> schemas.ProductInfo:
     return schemas.ProductInfo(**{
         'images': [
             f'http://example{count}.com',
@@ -63,6 +63,5 @@ def create_product_info_sample(count: int, supplier: schemas.Supplier, **kwargs)
         'price': 100.82,
         'product_name': f'Product #{count}',
         'description': 'some description here...',
-        'supplier': supplier,
         **kwargs
     })
