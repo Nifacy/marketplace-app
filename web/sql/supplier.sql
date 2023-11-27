@@ -37,13 +37,13 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION login_supplier(username TEXT, password TEXT)
 RETURNS INT AS $$
 DECLARE
-    account_id INT;
+    supplier_id INT;
 BEGIN
     SELECT account_id 
     FROM supplier_credentials 
     WHERE login = login_supplier.username AND password = crypt(login_supplier.password, password) 
-    INTO account_id;
-    RETURN account_id;
+    INTO supplier_id;
+    RETURN supplier_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -53,7 +53,7 @@ DECLARE
     supplier_id INT;
 BEGIN
     -- Проверяем, существует ли уже учетная запись с таким именем пользователя
-    supplier_id := login_supplier(username, password);
+    SELECT account_id FROM supplier_credentials WHERE login = register_supplier.username INTO supplier_id;
     IF supplier_id IS NOT NULL THEN
         RETURN FALSE;
     END IF;
