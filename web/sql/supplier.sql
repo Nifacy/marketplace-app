@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE OR REPLACE FUNCTION get_supplier(supplier_id INT)
 RETURNS TABLE (
     id INT,
@@ -47,22 +49,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION register_supplier(username TEXT, password TEXT)
-RETURNS BOOLEAN AS $$
-DECLARE
-    supplier_id INT;
+-- TODO: реализовать SupplierAlreadyExists() часть здесь
+CREATE OR REPLACE FUNCTION register_supplier(username TEXT, password TEXT, supplier_id INT)
+RETURNS TEXT AS $$
 BEGIN
-    -- Проверяем, существует ли уже учетная запись с таким именем пользователя
-    SELECT account_id FROM supplier_credentials WHERE login = register_supplier.username INTO supplier_id;
-    IF supplier_id IS NOT NULL THEN
-        RETURN FALSE;
-    END IF;
-    
-    -- Если нет, создаем новую учетную запись
-    supplier_id := nextval('suppliers_id_seq');
-    INSERT INTO supplier_credentials (login, password, account_id) 
-    VALUES (register_supplier.username, crypt(register_supplier.password, gen_salt('bf', 8)), supplier_id);
-    RETURN TRUE;
+    INSERT INTO supplier_credentials(
+        login, 
+        password, 
+        account_id) 
+    VALUES(
+        register_supplier.username, 
+        crypt(register_supplier.password, gen_salt('bf', 8)), 
+        register_supplier.supplier_id);
+    RETURN 'Supplier registration successful';
 END;
 $$ LANGUAGE plpgsql;
 

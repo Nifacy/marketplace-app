@@ -55,7 +55,7 @@ def create_supplier(conn: psycopg2.extensions.connection, supplier_info: Supplie
 
     if supplier_id is None:
         raise UnableToCreateSupplier()
-
+    
     return get_supplier(conn, supplier_id[0])
 
 
@@ -63,19 +63,20 @@ def register_supplier(conn: psycopg2.extensions.connection, supplier_form: Suppl
     cur = conn.cursor()
     
     cur.execute("SELECT COUNT(*) FROM supplier_credentials WHERE login = %s", (supplier_form.credentials.login,))
-    if cur.fetchone()[0] is not None:
+    if (a := cur.fetchone()[0]) > 0:
         raise SupplierAlreadyExists()
     
     supplier = create_supplier(conn, supplier_form.info)
+
+    cur.callproc('register_supplier', (supplier_form.credentials.login, supplier_form.credentials.password, supplier.id))
+    message = cur.fetchone()[0]
+    print(message)
     
-    cur.callproc('register_supplier', (supplier_form.credentials.login, supplier_form.credentials.password))
-    login = cur.fetchone()[0]
-    cur.close()
-    
-    if not login:
+    if message != 'Supplier registration successful':
         cur.callproc('delete_supplier', (supplier.id,))
         raise UnableToCreateSupplier()
     
+    cur.close()
     return supplier
 
 
