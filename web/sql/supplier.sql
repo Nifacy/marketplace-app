@@ -41,9 +41,9 @@ RETURNS INT AS $$
 DECLARE
     supplier_id INT;
 BEGIN
-    SELECT account_id 
-    FROM supplier_credentials 
-    WHERE login = login_supplier.username AND password = crypt(login_supplier.password, password) 
+    SELECT sc.account_id 
+    FROM supplier_credentials AS sc
+    WHERE sc.login = login_supplier.username AND sc.password = crypt(login_supplier.password, sc.password) 
     INTO supplier_id;
     RETURN supplier_id;
 END;
