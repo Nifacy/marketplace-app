@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE OR REPLACE FUNCTION get_supplier(supplier_id INT)
+CREATE OR REPLACE FUNCTION get_supplier(p_supplier_id INT)
 RETURNS TABLE (
     id INT,
     name VARCHAR(50),
@@ -8,7 +8,13 @@ RETURNS TABLE (
     address INT
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT suppliers.* FROM suppliers WHERE suppliers.id = supplier_id;
+    RETURN QUERY 
+    SELECT 
+        s.* 
+    FROM 
+        suppliers AS s
+    WHERE 
+        s.id = p_supplier_id;
 END; $$
 LANGUAGE plpgsql;
 
@@ -16,7 +22,7 @@ CREATE OR REPLACE FUNCTION create_supplier(
     p_name VARCHAR(50),
     p_contacts INT,
     p_address INT
-) RETURNS INT AS $$ -- Не уверен нужно будет ретурнить id. Оставлю здесь комментарий.
+) RETURNS INT AS $$ 
 DECLARE
     v_supplier_id INT;
 BEGIN
@@ -36,38 +42,45 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION login_supplier(username TEXT, password TEXT)
+CREATE OR REPLACE FUNCTION login_supplier(p_username TEXT, p_password TEXT)
 RETURNS INT AS $$
 DECLARE
-    supplier_id INT;
+    v_supplier_id INT;
 BEGIN
-    SELECT sc.account_id 
-    FROM supplier_credentials AS sc
-    WHERE sc.login = login_supplier.username AND sc.password = crypt(login_supplier.password, sc.password) 
-    INTO supplier_id;
-    RETURN supplier_id;
+    SELECT 
+        sc.account_id 
+    FROM 
+        supplier_credentials AS sc
+    WHERE 
+        sc.login = p_username AND 
+        sc.password = crypt(p_password, sc.password) 
+    INTO v_supplier_id;
+    
+    RETURN v_supplier_id;
 END;
 $$ LANGUAGE plpgsql;
 
--- TODO: реализовать SupplierAlreadyExists() часть здесь
-CREATE OR REPLACE FUNCTION register_supplier(username TEXT, password TEXT, supplier_id INT)
+CREATE OR REPLACE FUNCTION register_supplier(p_username TEXT, p_password TEXT, p_supplier_id INT)
 RETURNS TEXT AS $$
 BEGIN
     INSERT INTO supplier_credentials(
         login, 
         password, 
-        account_id) 
+        account_id
+    ) 
     VALUES(
-        register_supplier.username, 
-        crypt(register_supplier.password, gen_salt('bf', 8)), 
-        register_supplier.supplier_id);
+        p_username, 
+        crypt(p_password, gen_salt('bf', 8)), 
+        p_supplier_id
+    );
+    
     RETURN 'Supplier registration successful';
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION delete_supplier(supplier_id INT)
+CREATE OR REPLACE FUNCTION delete_supplier(p_supplier_id INT)
 RETURNS VOID AS $$
 BEGIN
-    DELETE FROM suppliers WHERE id = supplier_id;
+    DELETE FROM suppliers WHERE id = p_supplier_id;
 END;
 $$ LANGUAGE plpgsql;
