@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, validator
+from typing_extensions import Annotated
+from pydantic import BaseModel, EmailStr, validator, constr, StringConstraints
 import re
 
 class Address(BaseModel):
@@ -32,7 +33,18 @@ class Contacts(BaseModel):
 
 class SupplierCredentials(BaseModel):
     login: str
-    password: str
+    password: Annotated[str, StringConstraints(min_length=8)]
+
+    @validator('password')
+    def validate_password(cls, v):
+        if not re.findall(r'[A-Za-z]', v):
+            raise ValueError('Password must contain at least one letter.')
+        if not re.findall(r'\d', v):
+            raise ValueError('Password must contain at least one digit.')
+        if not re.findall(r'\W', v):
+            raise ValueError('Password must contain at least one special character.')
+        return v
+
 
 
 class SupplierInfo(BaseModel):

@@ -5,6 +5,7 @@ from ._exceptions import *
 from ._address import get_address, create_address
 from ._contacts import get_contacts, create_contacts
 
+SUCCESS_REGISTRATION = 'Supplier registration successful'
 
 def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supplier:
     cur = conn.cursor()
@@ -63,17 +64,22 @@ def register_supplier(conn: psycopg2.extensions.connection, supplier_form: Suppl
     cur = conn.cursor()
     
     cur.execute("SELECT COUNT(*) FROM supplier_credentials WHERE login = %s", (supplier_form.credentials.login,))
-    if (a := cur.fetchone()[0]) > 0:
+    if cur.fetchone()[0] > 0:
         raise SupplierAlreadyExists()
     
     supplier = create_supplier(conn, supplier_form.info)
 
-    cur.callproc('register_supplier', (supplier_form.credentials.login, supplier_form.credentials.password, supplier.id))
-    message = cur.fetchone()[0]
-    print(message)
+    cur.callproc(
+        'register_supplier', 
+        (supplier_form.credentials.login, 
+         supplier_form.credentials.password, 
+         supplier.id
+        )
+    )
     
-    if message != 'Supplier registration successful':
-        cur.callproc('delete_supplier', (supplier.id,))
+    message = cur.fetchone()[0]
+    if message != SUCCESS_REGISTRATION:
+        cur.callproc('delete_supplier_upon_registration', (supplier.id,))
         raise UnableToCreateSupplier()
     
     cur.close()
@@ -84,7 +90,14 @@ def register_supplier(conn: psycopg2.extensions.connection, supplier_form: Suppl
 def login_supplier(conn: psycopg2.extensions.connection, credentials: SupplierCredentials) -> Supplier:
     cur = conn.cursor()
     
-    cur.callproc('login_supplier', (credentials.login, credentials.password))
+    cur.callproc(
+        'login_supplier', 
+        (
+            credentials.login, 
+            credentials.password
+        )
+    )
+
     supplier_id = cur.fetchone()[0]
     cur.close()
     

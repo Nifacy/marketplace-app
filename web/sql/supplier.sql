@@ -84,3 +84,24 @@ BEGIN
     DELETE FROM suppliers WHERE id = p_supplier_id;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_supplier_upon_registration(p_supplier_id INT)
+RETURNS VOID AS $$
+DECLARE
+    p_contacts_id INT;
+    p_address_id INT;
+BEGIN
+    SELECT contacts, address INTO p_contacts_id, p_address_id FROM suppliers WHERE id = p_supplier_id;
+
+    DELETE FROM products WHERE suppliers_id = p_supplier_id;
+    DELETE FROM suppliers WHERE id = p_supplier_id;
+
+    IF NOT EXISTS (SELECT 1 FROM suppliers WHERE contacts = p_contacts_id) THEN
+        DELETE FROM contacts WHERE id = p_contacts_id;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM suppliers WHERE address = p_address_id) THEN
+        DELETE FROM addresses WHERE id = p_address_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
