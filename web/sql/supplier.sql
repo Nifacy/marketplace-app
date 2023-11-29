@@ -78,6 +78,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- TODO: Check `REFERENCE suppliers` tables and fix for proper deletion
 CREATE OR REPLACE FUNCTION delete_supplier(p_supplier_id INT)
 RETURNS VOID AS $$
 BEGIN
@@ -93,7 +94,7 @@ DECLARE
 BEGIN
     SELECT contacts, address INTO p_contacts_id, p_address_id FROM suppliers WHERE id = p_supplier_id;
 
-    DELETE FROM products WHERE suppliers_id = p_supplier_id;
+    -- DELETE FROM products WHERE suppliers_id = p_supplier_id;
     DELETE FROM suppliers WHERE id = p_supplier_id;
 
     IF NOT EXISTS (SELECT 1 FROM suppliers WHERE contacts = p_contacts_id) THEN

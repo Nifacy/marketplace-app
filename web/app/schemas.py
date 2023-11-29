@@ -46,7 +46,6 @@ class SupplierCredentials(BaseModel):
         return v
 
 
-
 class SupplierInfo(BaseModel):
     name: str
     contacts: Contacts
@@ -63,11 +62,31 @@ class Supplier(BaseModel):
     info: SupplierInfo
 
 
+class CustomerCredentials(BaseModel):
+    login: str
+    password: Annotated[str, StringConstraints(min_length=8)]
+
+    @validator('password')
+    def validate_password(cls, v):
+        if not re.findall(r'[A-Za-z]', v):
+            raise ValueError('Password must contain at least one letter.')
+        if not re.findall(r'\d', v):
+            raise ValueError('Password must contain at least one digit.')
+        if not re.findall(r'\W', v):
+            raise ValueError('Password must contain at least one special character.')
+        return v
+    
+
 class CustomerInfo(BaseModel):
     first_name: str
     last_name: str
     contacts: Contacts
     address: Address
+
+
+class CustomerRegisterForm(BaseModel):
+    credentials: CustomerCredentials
+    info: CustomerInfo
 
 
 class Customer(BaseModel):
