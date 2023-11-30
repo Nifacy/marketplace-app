@@ -122,3 +122,18 @@ def test_product_update(db_connection):
     )[0]
 
     assert _product == updated_product
+
+
+def test_remove_from_sale(db_connection):
+    _supplier = supplier.create_supplier(
+        db_connection,
+        utils.create_supplier_info_sample(),
+    )
+
+    product_info = utils.create_product_info_sample()
+
+    _product = product.create_product(db_connection, _supplier, product_info)
+    assert _product.is_for_sale == True
+    
+    _updated_product = product.remove_product_from_sale(db_connection, _product.id)
+    assert _updated_product.is_for_sale == False

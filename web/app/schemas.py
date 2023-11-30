@@ -82,3 +82,4 @@ class Product(BaseModel):
     in_favorites: bool
     supplier: Supplier
     info: ProductInfo
+    is_for_sale: bool

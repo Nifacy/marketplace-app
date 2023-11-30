@@ -27,6 +27,7 @@ def _deserialize_build(record, owner) -> Product:
             description=record[4],
         ),
         supplier=owner,
+        is_for_sale=record[6],
     )
 
 
@@ -113,5 +114,19 @@ def update_product(
         
         if _is_error_message(response[0]):
             _match_error_to_usecase_exception(_get_error_message(response[0]))
+
+    return get_products(conn, SearchFilters(product_id=product_id))[0]
+
+
+def remove_product_from_sale(conn: psycopg2.extensions.connection, product_id: int) -> Product:
+    with conn.cursor() as cur:
+        cur.callproc(
+            'remove_product_from_sale',
+            (product_id, ),
+        )
+
+        response = cur.fetchone()
+        if response is None:
+            raise UnableToUpdateProduct()
 
     return get_products(conn, SearchFilters(product_id=product_id))[0]

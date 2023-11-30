@@ -10,7 +10,8 @@ RETURNS TABLE (
     price NUMERIC(10, 2),
     product_name VARCHAR(50),
     description TEXT,
-    supplier_id INT
+    supplier_id INT,
+    is_for_sale BOOLEAN
 ) AS $$
 BEGIN
   RETURN QUERY
@@ -20,7 +21,8 @@ BEGIN
     p.price,
     p.product_name,
     p.description,
-    p.suppliers_id
+    p.suppliers_id,
+    p.is_for_sale
   FROM products p
   WHERE (p_product_id IS NULL OR p.id = p_product_id)
     AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
@@ -109,6 +111,17 @@ BEGIN
     END LOOP;
 
     RETURN 'ok';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION remove_product_from_sale(p_product_id INT)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE products
+    SET is_for_sale = false
+    WHERE id = p_product_id;
 END;
 $$
 LANGUAGE plpgsql;
