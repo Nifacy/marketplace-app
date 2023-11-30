@@ -14,6 +14,7 @@ class SearchFilters:
     product_id: int | None = None
     name: str | None = None
     owner_id: int | None = None
+    is_for_sale: bool | None = None
 
 
 def _deserialize_build(record, owner) -> Product:
@@ -52,6 +53,7 @@ def get_products(conn: psycopg2.extensions.connection, filters: SearchFilters) -
         filters.product_id,
         filters.name,
         filters.owner_id,
+        filters.is_for_sale,
     ))
 
     found_records = cur.fetchall()

@@ -2,7 +2,8 @@
 CREATE OR REPLACE FUNCTION get_products(
     p_product_id   INTEGER DEFAULT NULL,
     p_name         TEXT DEFAULT NULL,
-    p_owner_id     INTEGER DEFAULT NULL
+    p_owner_id     INTEGER DEFAULT NULL,
+    p_is_for_sale  BOOLEAN DEFAULT NULL
 )
 RETURNS TABLE (
     id INT,
@@ -26,7 +27,8 @@ BEGIN
   FROM products p
   WHERE (p_product_id IS NULL OR p.id = p_product_id)
     AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
-    AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id);
+    AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id)
+    AND (p_is_for_sale IS NULL OR p.is_for_sale = p_is_for_sale)
 END; $$
 LANGUAGE plpgsql;
 
