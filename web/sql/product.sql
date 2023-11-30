@@ -29,6 +29,7 @@ BEGIN
     AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
     AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id)
     AND (p_is_for_sale IS NULL OR p.is_for_sale = p_is_for_sale)
+  ORDER BY p.id;
 END; $$
 LANGUAGE plpgsql;
 
