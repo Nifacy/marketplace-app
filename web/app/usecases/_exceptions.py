@@ -21,9 +21,17 @@ class SupplierNotFound(Exception):
 class SupplierAlreadyExists(Exception):
     pass
 
+
+class CustomerAlreadyExists(Exception):
+    pass
+
+
 class UnableToCreateSupplier(Exception):
     pass
 
+
+class UnableToCreateCustomer(Exception):
+    pass
 
 class CustomerNotFound(Exception):
     pass
