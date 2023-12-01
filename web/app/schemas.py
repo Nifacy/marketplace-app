@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from pydantic import BaseModel, EmailStr, validator, constr, StringConstraints
+from pydantic import BaseModel, EmailStr, HttpUrl, validator, constr, StringConstraints
 import re
 
 class Address(BaseModel):
@@ -92,3 +92,35 @@ class CustomerRegisterForm(BaseModel):
 class Customer(BaseModel):
     id: int
     info: CustomerInfo
+
+
+class ProductInfo(BaseModel):
+    images: list[HttpUrl]
+    price: float
+    product_name: str
+    description: str
+
+    @validator('price')
+    def validate_price(cls, v):
+        if v < 0.0:
+            raise ValueError("Price can't be neagtive or zero")
+    
+        if round(v, 2) != v:
+            raise ValueError("Price must have max 2 digits after dot")
+        
+        return v
+    
+    @validator('product_name')
+    def validate_product_name(cls, v):
+        if len(v.splitlines()) > 1:
+            raise ValueError("Product name can't be multiline")
+        
+        return v.strip()
+
+
+class Product(BaseModel):
+    id: int
+    in_favorites: bool
+    supplier: Supplier
+    info: ProductInfo
+    is_for_sale: bool
