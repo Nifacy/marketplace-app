@@ -33,5 +33,30 @@ class UnableToCreateCustomer(Exception):
     pass
 
 
+class UnableToCreateProduct(Exception):
+    pass
+
+
+class ProductNotFound(Exception):
+    pass
+
+
+class UnableToUpdateProduct(Exception):
+    pass
+
+
+class UnableToCreateProduct(Exception):
+    pass
+
+
+class ProductNotFound(Exception):
+    pass
+
+
+class UnableToUpdateProduct(Exception):
+    pass
+
+
+
 class InvalidCredentials(Exception):
     pass
