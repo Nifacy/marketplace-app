@@ -17,7 +17,7 @@ def _init_db(conn: connection) -> None:
     ]
 
     for file in files:
-        with open(file, 'r') as f:
+        with open(file, 'r', encoding='utf-8') as f:
             cur.execute(f.read())
 
     cur.close()
