@@ -90,8 +90,6 @@ DECLARE
 BEGIN
     SELECT contacts, address INTO p_contacts_id, p_address_id FROM customers WHERE id = p_customer_id;
 
-    -- DELETE FROM orders WHERE customers_id = p_customer_id;
-    -- DELETE FROM favorite_products WHERE customers_id = p_customer_id;
     DELETE FROM customers WHERE id = p_customer_id;
 
     IF NOT EXISTS (SELECT 1 FROM customers WHERE contacts = p_contacts_id) THEN
