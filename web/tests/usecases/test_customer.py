@@ -1,45 +1,20 @@
 import pytest
 
-from app.schemas import CustomerCredentials, CustomerInfo, Address, Contacts, CustomerRegisterForm
+from app.schemas import CustomerCredentials, CustomerRegisterForm
 from app.usecases import customer
 
-
-_counter = 0
-
-
-def create_customer_sample() -> CustomerInfo:
-    global _counter
-    _counter += 1
-
-    return CustomerInfo(
-        first_name=f'test-customer-{_counter}',
-        last_name='Test',
-        contacts=Contacts(
-            phone='+1 (123) 456-7890',
-            email='test.email@mail.com',
-            telegram='@testcustomer',
-        ),
-        address=Address(
-            street='Street',
-            city='Paris',
-            country='France',
-            postal_code='75000',
-            house=1,
-            entrance=1,
-            appartment=1,
-        )
-    )
+from . import utils
 
 
 def test_customer_creation(db_connection):
-    expected_customer_info = create_customer_sample()
+    expected_customer_info = utils.create_customer_info_sample()
     created_customer = customer.create_customer(db_connection, expected_customer_info)
     
     assert created_customer.info == expected_customer_info
 
 
 def test_customer_getable_after_creation(db_connection):
-    expected_customer_info = create_customer_sample()
+    expected_customer_info = utils.create_customer_info_sample()
     created_customer = customer.create_customer(db_connection, expected_customer_info)
     found_customer = customer.get_customer(db_connection, created_customer.id)
 
@@ -57,7 +32,7 @@ def test_customer_exists_after_registration(db_connection):
             login="customer",
             password="Test@1234",
         ),
-        info=create_customer_sample(),
+        info=utils.create_customer_info_sample(),
     )
 
     created_customer = customer.register_customer(db_connection, customer_form)
@@ -74,7 +49,7 @@ def test_can_login_after_success_registration(db_connection):
 
     customer_form = CustomerRegisterForm(
         credentials=customer_credentials,
-        info=create_customer_sample(),
+        info=utils.create_customer_info_sample(),
     )
 
     created_customer = customer.register_customer(db_connection, customer_form)
@@ -91,7 +66,7 @@ def test_cant_register_already_exists_customer(db_connection):
 
     customer_form = CustomerRegisterForm(
         credentials=customer_credentials,
-        info=create_customer_sample(),
+        info=utils.create_customer_info_sample(),
     )
 
     customer.register_customer(db_connection, customer_form)

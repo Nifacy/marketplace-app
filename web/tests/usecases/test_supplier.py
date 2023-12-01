@@ -1,45 +1,19 @@
 import pytest
-
-from app.schemas import SupplierInfo, Address, Contacts, SupplierRegisterForm, SupplierCredentials
+from app.schemas import SupplierRegisterForm, SupplierCredentials
 from app.usecases import supplier
-
-
-_counter = 0
-
-
-def create_supplier_sample() -> SupplierInfo:
-    global _counter
-    _counter += 1
-
-    return SupplierInfo(
-        name=f'test-supplier-{_counter}',
-        contacts=Contacts(
-            phone='+1 (123) 456-7890',
-            email='test.email@mail.com',
-            telegram='@testsupplier',
-        ),
-        address=Address(
-            street='Street',
-            city='Moscow',
-            country='Russia',
-            postal_code='12345',
-            house=1,
-            entrance=1,
-            appartment=1,
-        )
-    )
+from . import utils
 
 
 def test_supplier_creation(db_connection):
-    expected_supplier_info = create_supplier_sample()
-    created_supplier = supplier.create_supplier(db_connection, expected_supplier_info)
+    supplier_info_sample = utils.create_supplier_info_sample()
+    created_supplier = supplier.create_supplier(db_connection, supplier_info_sample)
 
-    assert created_supplier.info == expected_supplier_info
+    assert created_supplier.info == supplier_info_sample
 
 
 def test_supplier_getable_after_creation(db_connection):
-    expected_supplier_info = create_supplier_sample()
-    created_supplier = supplier.create_supplier(db_connection, expected_supplier_info)
+    supplier_info_sample = utils.create_supplier_info_sample()
+    created_supplier = supplier.create_supplier(db_connection, supplier_info_sample)
     found_supplier = supplier.get_supplier(db_connection, created_supplier.id)
 
     assert created_supplier == found_supplier
@@ -58,7 +32,7 @@ def test_supplier_exists_after_registration(db_connection):
             login="supplier",
             password="Test@1234",
         ),
-        info=create_supplier_sample(),
+        info=utils.create_supplier_info_sample(),
     )
 
     created_supplier = supplier.register_supplier(db_connection, supplier_form)
@@ -75,7 +49,7 @@ def test_can_login_after_success_registration(db_connection):
 
     supplier_form = SupplierRegisterForm(
         credentials=supplier_credentials,
-        info=create_supplier_sample(),
+        info=utils.create_supplier_info_sample(),
     )
 
     created_supplier = supplier.register_supplier(db_connection, supplier_form)
@@ -92,7 +66,7 @@ def test_cant_register_already_exists_supplier(db_connection):
 
     supplier_form = SupplierRegisterForm(
         credentials=supplier_credentials,
-        info=create_supplier_sample(),
+        info=utils.create_supplier_info_sample(),
     )
 
     supplier.register_supplier(db_connection, supplier_form)

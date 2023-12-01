@@ -13,6 +13,7 @@ def _init_db(conn: connection) -> None:
         'sql/contacts.sql',
         'sql/supplier.sql',
         'sql/customer.sql',
+        'sql/product.sql',
     ]
 
     for file in files:
