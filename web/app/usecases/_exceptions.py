@@ -65,6 +65,9 @@ class UnableToUpdateProduct(Exception):
     pass
 
 
-
 class InvalidCredentials(Exception):
+    pass
+
+
+class UnableDecodeToken(Exception):
     pass

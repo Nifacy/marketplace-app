@@ -1,5 +1,5 @@
 from typing import Literal
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import Annotated
 from pydantic import BaseModel, EmailStr, HttpUrl, validator, constr, StringConstraints
 import re
 
