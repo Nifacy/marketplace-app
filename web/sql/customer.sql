@@ -7,7 +7,13 @@ RETURNS TABLE (
     address INT
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT customers.* FROM customers WHERE customers.id = customer_id;
+    RETURN QUERY 
+    SELECT 
+        customers.* 
+    FROM 
+        customers 
+    WHERE 
+        customers.id = customer_id;
 END; $$
 LANGUAGE plpgsql;
 

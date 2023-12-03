@@ -1,5 +1,4 @@
-import psycopg2.extras
-import psycopg2
+from psycopg2.extensions import connection
 from app.schemas import Supplier, SupplierInfo, SupplierRegisterForm, SupplierCredentials
 from ._exceptions import *
 from ._address import get_address, create_address
@@ -7,7 +6,7 @@ from ._contacts import get_contacts, create_contacts
 
 SUCCESS_REGISTRATION = 'Supplier registration successful'
 
-def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supplier:
+def get_supplier(conn: connection, supplier_id: int) -> Supplier:
     cur = conn.cursor()
 
     cur.callproc('get_supplier', (supplier_id,))
@@ -36,7 +35,7 @@ def get_supplier(conn: psycopg2.extensions.connection, supplier_id: int) -> Supp
     return supplier
 
 
-def create_supplier(conn: psycopg2.extensions.connection, supplier_info: SupplierInfo) -> Supplier:
+def create_supplier(conn: connection, supplier_info: SupplierInfo) -> Supplier:
     cur = conn.cursor()
 
     address_id = create_address(conn, supplier_info.address)
@@ -60,7 +59,7 @@ def create_supplier(conn: psycopg2.extensions.connection, supplier_info: Supplie
     return get_supplier(conn, supplier_id[0])
 
 
-def register_supplier(conn: psycopg2.extensions.connection, supplier_form: SupplierRegisterForm) -> Supplier:
+def register_supplier(conn: connection, supplier_form: SupplierRegisterForm) -> Supplier:
     cur = conn.cursor()
     
     cur.execute("SELECT COUNT(*) FROM supplier_credentials WHERE login = %s", (supplier_form.credentials.login,))
@@ -87,7 +86,7 @@ def register_supplier(conn: psycopg2.extensions.connection, supplier_form: Suppl
 
 
 
-def login_supplier(conn: psycopg2.extensions.connection, credentials: SupplierCredentials) -> Supplier:
+def login_supplier(conn: connection, credentials: SupplierCredentials) -> Supplier:
     cur = conn.cursor()
     
     cur.callproc(

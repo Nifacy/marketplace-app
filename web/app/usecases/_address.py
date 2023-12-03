@@ -1,10 +1,9 @@
-import psycopg2.extras
-import psycopg2
+from psycopg2.extensions import connection
 from app.schemas import Address
 from ._exceptions import AddressNotFound, UnableToCreateAddress
 
 
-def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Address:
+def get_address(conn: connection, address_id: int) -> Address:
     cur = conn.cursor()
 
     cur.callproc('get_address', (address_id,))
@@ -29,7 +28,7 @@ def get_address(conn: psycopg2.extensions.connection, address_id: int) -> Addres
     return address
 
 
-def create_address(conn: psycopg2.extensions.connection, address: Address) -> int:
+def create_address(conn: connection, address: Address) -> int:
     cur = conn.cursor()
 
     cur.callproc(

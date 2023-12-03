@@ -1,10 +1,9 @@
-import psycopg2.extras
-import psycopg2
+from psycopg2.extensions import connection
 from app.schemas import Contacts
 from ._exceptions import ContactsNotFound, UnableToCreateContacts
 
 
-def get_contacts(conn: psycopg2.extensions.connection, contacts_id: int) -> Contacts:
+def get_contacts(conn: connection, contacts_id: int) -> Contacts:
     cur = conn.cursor()
 
     cur.callproc('get_contacts', (contacts_id,))
@@ -25,7 +24,7 @@ def get_contacts(conn: psycopg2.extensions.connection, contacts_id: int) -> Cont
     return contacts
 
 
-def create_contacts(conn: psycopg2.extensions.connection, contacts: Contacts) -> int:
+def create_contacts(conn: connection, contacts: Contacts) -> int:
     cur = conn.cursor()
 
     cur.callproc(

@@ -1,5 +1,4 @@
-import psycopg2.extras
-import psycopg2
+from psycopg2.extensions import connection
 from app.schemas import Customer, CustomerCredentials, CustomerInfo, CustomerRegisterForm
 from ._exceptions import *
 from ._address import get_address, create_address
@@ -8,7 +7,7 @@ from ._contacts import get_contacts, create_contacts
 
 SUCCESS_REGISTRATION = 'Customer registration successful'
 
-def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Customer:
+def get_customer(conn: connection, customer_id: int) -> Customer:
     cur = conn.cursor()
 
     cur.callproc('get_customer', (customer_id,))
@@ -38,7 +37,7 @@ def get_customer(conn: psycopg2.extensions.connection, customer_id: int) -> Cust
     return customer
 
 
-def create_customer(conn: psycopg2.extensions.connection, customer_info: CustomerInfo) -> Customer:
+def create_customer(conn: connection, customer_info: CustomerInfo) -> Customer:
     cur = conn.cursor()
 
     address_id = create_address(conn, customer_info.address)
@@ -63,7 +62,7 @@ def create_customer(conn: psycopg2.extensions.connection, customer_info: Custome
     return get_customer(conn, response[0])
 
 
-def register_customer(conn: psycopg2.extensions.connection, customer_form: CustomerRegisterForm) -> Customer:
+def register_customer(conn: connection, customer_form: CustomerRegisterForm) -> Customer:
     cur = conn.cursor()
     
     cur.execute("SELECT COUNT(*) FROM customer_credentials WHERE login = %s", (customer_form.credentials.login,))
@@ -90,7 +89,7 @@ def register_customer(conn: psycopg2.extensions.connection, customer_form: Custo
 
 
 
-def login_customer(conn: psycopg2.extensions.connection, credentials: CustomerCredentials) -> Customer:
+def login_customer(conn: connection, credentials: CustomerCredentials) -> Customer:
     cur = conn.cursor()
     
     cur.callproc(
