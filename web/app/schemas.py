@@ -1,3 +1,4 @@
+from typing import Literal
 from typing_extensions import Annotated
 from pydantic import BaseModel, EmailStr, HttpUrl, validator, constr, StringConstraints
 import re
@@ -124,3 +125,8 @@ class Product(BaseModel):
     supplier: Supplier
     info: ProductInfo
     is_for_sale: bool
+
+
+class TokenData(BaseModel):
+    type: Literal['supplier', 'customer']
+    id: int
