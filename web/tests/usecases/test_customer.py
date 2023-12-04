@@ -3,7 +3,7 @@ import pytest
 from app.schemas import CustomerCredentials, CustomerRegisterForm
 from app.usecases import customer
 
-from . import utils
+from tests import utils
 
 
 def test_customer_creation(db_connection):

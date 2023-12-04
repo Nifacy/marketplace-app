@@ -3,7 +3,7 @@ import pytest
 from app.usecases import supplier, product
 from app.schemas import ProductInfo
 
-from . import utils
+from tests import utils
 
 
 def test_product_creation(db_connection):
