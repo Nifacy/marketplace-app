@@ -5,21 +5,16 @@ import pytest
 from app.schemas import TokenData, Supplier, Customer
 from app.usecases.oauth2 import generate_token, verify_access_token, get_current_user
 from app.usecases import customer, supplier
+from app.usecases._exceptions import *
 
 from . import utils
 
 
-def test_token_encoding_and_decoding():
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=f"Could not validate credentials", 
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-    
+def test_token_encoding_and_decoding():    
     data = TokenData(type='supplier', id=123)
 
     token = generate_token(data)
-    decoded_data = verify_access_token(token, credentials_exception)
+    decoded_data = verify_access_token(token)
 
     assert decoded_data == data
 
@@ -33,9 +28,7 @@ def test_get_current_user_supplier(db_connection):
     user = get_current_user(db_connection, token)
 
     assert isinstance(user, Supplier)
-    assert user.id == created_supplier.id
-    # TODO: Add more assertions to check the other attributes of the user if needed (don't think so)
-    # idk, in case of data corruption???
+    assert user == created_supplier
 
 
 def test_get_current_user_customer(db_connection):
@@ -47,12 +40,11 @@ def test_get_current_user_customer(db_connection):
     user = get_current_user(db_connection, token)
 
     assert isinstance(user, Customer)
-    assert user.id == created_customer.id
-    # TODO: Add more assertions to check the other attributes of the user if needed (don't think so)
-    # idk, in case of data corruption???
+    assert user == created_customer
 
 
-def test_get_current_user_invalid_token_data(db_connection):
+
+def test_get_current_user_invalid_token_data():
     token_data_dict = {"type": "invalid_type", "id": 99999}
     with pytest.raises(ValidationError):
         token_data = TokenData(**token_data_dict)

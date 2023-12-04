@@ -1,5 +1,5 @@
 from typing import Literal
-from fastapi import status, Depends, HTTPException
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from psycopg2.extensions import connection
 
 from app.config import settings
-from app.schemas import Customer, Supplier, TokenData
+from app.schemas import TokenData
 from .customer import get_customer
 from .supplier import get_supplier
 from ._exceptions import *
@@ -29,7 +29,7 @@ def generate_token(data: TokenData) -> str:
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_access_token(token: str, credentials_exception) -> TokenData:
+def verify_access_token(token: str) -> TokenData:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
@@ -37,24 +37,21 @@ def verify_access_token(token: str, credentials_exception) -> TokenData:
         id: str | None = payload.get("id")
 
         if token_type is None or id is None:
-            raise UnableDecodeToken("Unable to decode token (None)")
+            raise UnableDecodeTokenNone()
         
         return TokenData(type=token_type, id=int(id))
     
     except JWTError:
-        raise credentials_exception
+        raise UnableToDecodeToken()
     except ValidationError:
-        raise UnableDecodeToken("Invalid token data")
+        raise InvalidTokenDataError()
 
 
 def get_current_user(conn: connection, token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=f"Could not validate credentials", 
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-
-    token_data = verify_access_token(token, credentials_exception)
+    try:
+        token_data = verify_access_token(token)
+    except UnableToDecodeToken:
+        raise CredentialsException()
 
     try:
         if token_data.type == 'supplier':
@@ -64,6 +61,6 @@ def get_current_user(conn: connection, token: str = Depends(oauth2_scheme)):
         else:
             raise HTTPException(status_code=400, detail="Invalid user type")
     except (SupplierNotFound, CustomerNotFound):
-        raise credentials_exception
+        raise CredentialsException()
 
     return user
