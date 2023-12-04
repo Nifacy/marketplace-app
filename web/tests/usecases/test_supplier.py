@@ -1,7 +1,7 @@
 import pytest
 from app.schemas import SupplierRegisterForm, SupplierCredentials
 from app.usecases import supplier
-from . import utils
+from tests import utils
 
 
 def test_supplier_creation(db_connection):
