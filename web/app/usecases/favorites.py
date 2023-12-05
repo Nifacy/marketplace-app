@@ -1,8 +1,10 @@
 from enum import Enum
+
 import psycopg2.extensions
-from ._exceptions import UnableToAddToFavorite, ProductNotFound, CustomerNotFound
-from . import product
 from app.schemas import Product
+
+from . import product
+from ._exceptions import CustomerNotFound, ProductNotFound, UnableToAddToFavorite
 
 
 class _StatusCode(Enum):
@@ -19,22 +21,21 @@ def _handle_status_code(status_code: _StatusCode) -> None:
         raise ProductNotFound()
 
 
-
 def add_to_favorite(conn: psycopg2.extensions.connection, customer_id: int, product_id: int) -> None:
     cur = conn.cursor()
-    cur.callproc('add_to_favorite', (customer_id, product_id))
+    cur.callproc("add_to_favorite", (customer_id, product_id))
     response = cur.fetchone()
     cur.close()
 
     if response is None:
         raise UnableToAddToFavorite()
-    
+
     _handle_status_code(_StatusCode(response[0]))
 
 
 def get_favorites(conn: psycopg2.extensions.connection, customer_id: int) -> list[Product]:
     cur = conn.cursor()
-    cur.callproc('get_favorites', (customer_id,))
+    cur.callproc("get_favorites", (customer_id,))
     found_records = cur.fetchall()
     cur.close()
 
@@ -43,7 +44,7 @@ def get_favorites(conn: psycopg2.extensions.connection, customer_id: int) -> lis
 
 def remove_from_favorites(conn: psycopg2.extensions.connection, customer_id: int, product_id: int) -> None:
     cur = conn.cursor()
-    cur.callproc('remove_from_favorites', (customer_id, product_id))
+    cur.callproc("remove_from_favorites", (customer_id, product_id))
     response = cur.fetchone()
     cur.close()
 
