@@ -1,21 +1,25 @@
--- TODO: Move logic of building product object in separate function 
-CREATE OR REPLACE FUNCTION get_products(
-    p_product_id   INTEGER DEFAULT NULL,
-    p_name         TEXT DEFAULT NULL,
-    p_owner_id     INTEGER DEFAULT NULL,
-    p_is_for_sale  BOOLEAN DEFAULT NULL
-)
-RETURNS TABLE (
-    id INT,
-    images TEXT[],
-    price NUMERIC(10, 2),
-    product_name VARCHAR(50),
-    description TEXT,
-    supplier_id INT,
-    is_for_sale BOOLEAN
-) AS $$
+DO $$
 BEGIN
-  RETURN QUERY
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'product_object') THEN
+        CREATE TYPE product_object AS (
+            id INT,
+            images TEXT[],
+            price NUMERIC(10, 2),
+            product_name VARCHAR(50),
+            description TEXT,
+            supplier_id INT,
+            is_for_sale BOOLEAN
+        );
+    END IF;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION build_product_object(p_id INTEGER)
+RETURNS product_object AS $$
+DECLARE
+    obj product_object;
+BEGIN
   SELECT 
     p.id,
     ARRAY(SELECT url FROM product_images WHERE product = p.id),
@@ -24,12 +28,37 @@ BEGIN
     p.description,
     p.suppliers_id,
     p.is_for_sale
+  INTO obj
   FROM products p
-  WHERE (p_product_id IS NULL OR p.id = p_product_id)
-    AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
-    AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id)
-    AND (p_is_for_sale IS NULL OR p.is_for_sale = p_is_for_sale)
-  ORDER BY p.id;
+  WHERE p.id = p_id;
+
+  RETURN obj;
+END; $$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_products(
+    p_product_id   INTEGER DEFAULT NULL,
+    p_name         TEXT DEFAULT NULL,
+    p_owner_id     INTEGER DEFAULT NULL,
+    p_is_for_sale  BOOLEAN DEFAULT NULL
+)
+RETURNS SETOF product_object AS $$
+DECLARE
+    product_id INT;
+BEGIN
+  FOR product_id IN
+    SELECT 
+      p.id
+    FROM products p
+    WHERE (p_product_id IS NULL OR p.id = p_product_id)
+      AND (p_name IS NULL OR p.product_name LIKE '%' || p_name || '%')
+      AND (p_owner_id IS NULL OR p.suppliers_id = p_owner_id)
+      AND (p_is_for_sale IS NULL OR p.is_for_sale = p_is_for_sale)
+    ORDER BY p.id
+  LOOP
+    RETURN QUERY SELECT * FROM build_product_object(product_id);
+  END LOOP;
 END; $$
 LANGUAGE plpgsql;
 
