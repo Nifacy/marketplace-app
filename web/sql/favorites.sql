@@ -30,3 +30,26 @@ BEGIN
   RETURN 0;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- Function to get favorite products for a customer
+-- Input parameters:
+--   p_customer_id - Customer ID
+-- Return values:
+-- SETOF product_object - A set of product objects representing the favorite products of the customer
+
+CREATE OR REPLACE FUNCTION get_favorites(p_customer_id INT)
+RETURNS SETOF product_object AS $$
+DECLARE
+    product_id INT;
+BEGIN
+  FOR product_id IN
+    SELECT 
+      p.product_id
+    FROM favorite_products p
+    WHERE (p.customer_id = p_customer_id)
+  LOOP
+    RETURN QUERY SELECT * FROM build_product_object(product_id);
+  END LOOP;
+END; $$
+LANGUAGE plpgsql;

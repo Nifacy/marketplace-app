@@ -1,6 +1,8 @@
 from enum import Enum
 import psycopg2.extensions
 from ._exceptions import UnableToAddToFavorite, ProductNotFound, CustomerNotFound
+from . import product
+from app.schemas import Product
 
 
 class _StatusCode(Enum):
@@ -25,3 +27,12 @@ def add_to_favorite(conn: psycopg2.extensions.connection, customer_id: int, prod
 
     if status_code == _StatusCode.PRODUCT_NOT_EXISTS:
         raise ProductNotFound()
+
+
+def get_favorites(conn: psycopg2.extensions.connection, customer_id: int) -> list[Product]:
+    cur = conn.cursor()
+    cur.callproc('get_favorites', (customer_id,))
+    found_records = cur.fetchall()
+    cur.close()
+
+    return list(product.deserialize_builds(conn, found_records))

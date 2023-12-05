@@ -22,3 +22,19 @@ def test_cant_add_non_existent_product(db_connection):
 
     with pytest.raises(favorites.ProductNotFound):
         favorites.add_to_favorite(db_connection, _customer.id, -1)
+
+
+def test_getable_after_added_to_favorites(db_connection):
+    supplier_info = utils.create_supplier_info_sample()
+    _supplier = supplier.create_supplier(db_connection, supplier_info)
+
+    product_info = utils.create_product_info_sample()
+    _product = product.create_product(db_connection, _supplier, product_info)
+
+    customer_info = utils.create_customer_info_sample()
+    _customer = customer.create_customer(db_connection, customer_info)
+
+    favorites.add_to_favorite(db_connection, _customer.id, _product.id)
+    favorite_products = favorites.get_favorites(db_connection, _customer.id)
+
+    assert favorite_products == [_product]
