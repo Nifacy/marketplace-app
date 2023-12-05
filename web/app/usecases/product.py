@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import itertools
+from typing import Iterator
 
 import psycopg2
 import psycopg2.extensions
@@ -32,6 +33,16 @@ def _deserialize_build(record, owner) -> Product:
     )
 
 
+def deserialize_builds(conn: psycopg2.extensions.connection, found_records) -> Iterator[Product]:
+    grouped_records = itertools.groupby(found_records, key=lambda record: record[5])
+
+    for owner_id, group in grouped_records:
+        owner = supplier.get_supplier(conn, owner_id)
+
+        for record in group:
+            yield _deserialize_build(record, owner)
+
+
 def _is_error_message(message: str) -> bool:
     return message.startswith('error:')
 
@@ -59,14 +70,7 @@ def get_products(conn: psycopg2.extensions.connection, filters: SearchFilters) -
     found_records = cur.fetchall()
     cur.close()
 
-    products = []
-    grouped_records = itertools.groupby(found_records, key=lambda record: record[5])
-
-    for owner_id, group in grouped_records:
-        owner = supplier.get_supplier(conn, owner_id)
-        products.extend(_deserialize_build(record, owner) for record in group)
-
-    return products
+    return list(deserialize_builds(conn, found_records))
 
 
 def create_product(conn: psycopg2.extensions.connection, supplier: Supplier, product_info: ProductInfo) -> Product:
