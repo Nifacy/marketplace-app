@@ -825,11 +825,10 @@ components:
         - canceled
     OrderCreateSchema:
       type: object
+      required:
+        - product_id
+        - target_address
       properties:
-        price:
-          type: number
-          format: float
-          example: 90.99
         product_id:
           type: integer
           example: 12345
