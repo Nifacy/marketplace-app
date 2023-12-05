@@ -71,3 +71,7 @@ class InvalidCredentials(Exception):
 
 class UnableDecodeToken(Exception):
     pass
+
+
+class UnableToAddToFavorite(Exception):
+    pass
