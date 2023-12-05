@@ -11,6 +11,15 @@ class _StatusCode(Enum):
     PRODUCT_NOT_EXISTS = 2
 
 
+def _handle_status_code(status_code: _StatusCode) -> None:
+    if status_code == _StatusCode.CUSTOMER_NOT_EXISTS:
+        raise CustomerNotFound()
+
+    if status_code == _StatusCode.PRODUCT_NOT_EXISTS:
+        raise ProductNotFound()
+
+
+
 def add_to_favorite(conn: psycopg2.extensions.connection, customer_id: int, product_id: int) -> None:
     cur = conn.cursor()
     cur.callproc('add_to_favorite', (customer_id, product_id))
@@ -20,13 +29,7 @@ def add_to_favorite(conn: psycopg2.extensions.connection, customer_id: int, prod
     if response is None:
         raise UnableToAddToFavorite()
     
-    status_code = _StatusCode(response[0])
-
-    if status_code == _StatusCode.CUSTOMER_NOT_EXISTS:
-        raise CustomerNotFound()
-
-    if status_code == _StatusCode.PRODUCT_NOT_EXISTS:
-        raise ProductNotFound()
+    _handle_status_code(_StatusCode(response[0]))
 
 
 def get_favorites(conn: psycopg2.extensions.connection, customer_id: int) -> list[Product]:
@@ -36,3 +39,15 @@ def get_favorites(conn: psycopg2.extensions.connection, customer_id: int) -> lis
     cur.close()
 
     return list(product.deserialize_builds(conn, found_records))
+
+
+def remove_from_favorites(conn: psycopg2.extensions.connection, customer_id: int, product_id: int) -> None:
+    cur = conn.cursor()
+    cur.callproc('remove_from_favorites', (customer_id, product_id))
+    response = cur.fetchone()
+    cur.close()
+
+    if response is None:
+        raise UnableToAddToFavorite()
+
+    _handle_status_code(_StatusCode(response[0]))
