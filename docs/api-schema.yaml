@@ -32,7 +32,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Supplier'
+                type: object
+                properties:
+                  token:
+                    type: string
+                example:
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic3VwcGxpZXIiLCJpZCI6MSwiZXhwIjoxNzAxOTkyNzIwfQ.1RnPIHFUy42tyZdyEr2pzkz6T_HjOUBV2mAed5MT33I"
         '400':
           description: Неверный формат данных
         '409':
