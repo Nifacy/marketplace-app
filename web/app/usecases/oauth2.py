@@ -12,7 +12,10 @@ ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 
-def generate_token(data: TokenData) -> str:
+Token = str
+
+
+def generate_token(data: TokenData) -> Token:
     to_encode = data.model_dump()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
@@ -20,7 +23,7 @@ def generate_token(data: TokenData) -> str:
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_token(token: str) -> TokenData:
+def decode_token(token: Token) -> TokenData:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
