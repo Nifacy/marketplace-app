@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from urllib.parse import scheme_chars
 from fastapi import FastAPI, HTTPException
 
 from . import database
@@ -40,3 +41,24 @@ async def register_supplier(register_form: schemas.SupplierRegisterForm):
             id=_supplier.id
         )),
     )
+
+
+@app.post("/supplier/login", response_model=schemas.Token)
+async def login_supplier(credentials: schemas.SupplierCredentials):
+    global conn
+
+    try:
+        _supplier = supplier.login_supplier(conn, credentials)
+
+        return schemas.Token(
+            token=oauth2.generate_token(oauth2.TokenData(
+                type='supplier',
+                id=_supplier.id,
+            ))
+        )
+
+    except supplier.InvalidCredentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Wrong login or password",
+        )
