@@ -130,3 +130,7 @@ class Product(BaseModel):
 class TokenData(BaseModel):
     type: Literal['supplier', 'customer']
     id: int
+
+
+class Token(BaseModel):
+    token: str
