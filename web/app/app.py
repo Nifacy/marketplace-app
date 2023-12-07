@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from . import database
 from . import schemas
 from .usecases import supplier
+from .usecases import customer
 from .usecases import oauth2
 
 conn = None
@@ -54,6 +55,39 @@ async def login_supplier(credentials: schemas.SupplierCredentials):
             token=oauth2.generate_token(oauth2.TokenData(
                 type='supplier',
                 id=_supplier.id,
+            ))
+        )
+
+    except supplier.InvalidCredentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Wrong login or password",
+        )
+
+
+@app.post("/customer/register", response_model=schemas.Token)
+async def register_customer(register_form: schemas.CustomerRegisterForm):
+    global conn
+    _customer = customer.register_customer(conn, register_form)
+    return schemas.Token(
+        token=oauth2.generate_token(oauth2.TokenData(
+            type='customer',
+            id=_customer.id
+        )),
+    )
+
+
+@app.post("/customer/login", response_model=schemas.Token)
+async def login_customer(credentials: schemas.CustomerCredentials):
+    global conn
+
+    try:
+        _customer = customer.login_customer(conn, credentials)
+
+        return schemas.Token(
+            token=oauth2.generate_token(oauth2.TokenData(
+                type='customer',
+                id=_customer.id,
             ))
         )
 
