@@ -1,8 +1,23 @@
 import itertools
+import random
+import string
 from typing import Callable, TypeVar
+
 from app import schemas
 
 _T = TypeVar('_T')
+
+def _generate_password(length: int = 10):
+    letter = random.choice(string.ascii_letters)
+    digit = random.choice(string.digits)
+    special_char = random.choice(string.punctuation)
+
+    remaining_chars = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for _ in range(length))
+    password = letter + digit + special_char + remaining_chars
+    password = ''.join(random.sample(password, len(password)))
+
+    return password
+
 
 # TODO: make type hints better here
 def with_counter(func: Callable[..., _T]) -> Callable[..., _T]:
@@ -65,3 +80,28 @@ def create_product_info_sample(count: int, **kwargs) -> schemas.ProductInfo:
         'description': 'some description here...',
         **kwargs
     })
+
+
+@with_counter
+def create_customer_register_form(count: int) -> schemas.CustomerRegisterForm:
+    supplier_info = create_customer_info_sample()
+    customer_credentials = schemas.CustomerCredentials(
+        login=f"test-supplier-{count}",
+        password=_generate_password(),
+    )
+    return schemas.CustomerRegisterForm(
+        credentials=customer_credentials,
+        info=supplier_info,
+    )
+
+@with_counter
+def create_supplier_register_form(count: int) -> schemas.SupplierRegisterForm:
+    supplier_info = create_supplier_info_sample()
+    customer_credentials = schemas.SupplierCredentials(
+        login=f"test-supplier-{count}",
+        password=_generate_password(),
+    )
+    return schemas.SupplierRegisterForm(
+        credentials=customer_credentials,
+        info=supplier_info,
+    )

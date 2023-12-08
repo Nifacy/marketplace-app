@@ -1,8 +1,7 @@
 import pytest
 
-from app.usecases import supplier, product
 from app.schemas import ProductInfo
-
+from app.usecases import product, supplier
 from tests import utils
 
 

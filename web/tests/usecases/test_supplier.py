@@ -1,5 +1,6 @@
 import pytest
-from app.schemas import SupplierRegisterForm, SupplierCredentials
+
+from app.schemas import SupplierCredentials, SupplierRegisterForm
 from app.usecases import supplier
 from tests import utils
 
@@ -27,14 +28,7 @@ def test_supplier_not_found(db_connection):
 
 
 def test_supplier_exists_after_registration(db_connection):
-    supplier_form = SupplierRegisterForm(
-        credentials=SupplierCredentials(
-            login="supplier",
-            password="Test@1234",
-        ),
-        info=utils.create_supplier_info_sample(),
-    )
-
+    supplier_form = utils.create_supplier_register_form()
     created_supplier = supplier.register_supplier(db_connection, supplier_form)
     found_supplier = supplier.get_supplier(db_connection, created_supplier.id)
 
@@ -42,33 +36,15 @@ def test_supplier_exists_after_registration(db_connection):
 
 
 def test_can_login_after_success_registration(db_connection):
-    supplier_credentials = SupplierCredentials(
-        login="supplier",
-        password="Test@1234",
-    )
-
-    supplier_form = SupplierRegisterForm(
-        credentials=supplier_credentials,
-        info=utils.create_supplier_info_sample(),
-    )
-
+    supplier_form = utils.create_supplier_register_form()
     created_supplier = supplier.register_supplier(db_connection, supplier_form)
-    authorised_supplier = supplier.login_supplier(db_connection, supplier_credentials)
+    authorised_supplier = supplier.login_supplier(db_connection, supplier_form.credentials)
 
     assert created_supplier == authorised_supplier
 
 
 def test_cant_register_already_exists_supplier(db_connection):
-    supplier_credentials = SupplierCredentials(
-        login="supplier",
-        password="Test@1234",
-    )
-
-    supplier_form = SupplierRegisterForm(
-        credentials=supplier_credentials,
-        info=utils.create_supplier_info_sample(),
-    )
-
+    supplier_form = utils.create_supplier_register_form()
     supplier.register_supplier(db_connection, supplier_form)
 
     with pytest.raises(supplier.SupplierAlreadyExists):
@@ -76,10 +52,7 @@ def test_cant_register_already_exists_supplier(db_connection):
 
 
 def test_cant_login_if_supplier_not_exists(db_connection):
-    supplier_credentials = SupplierCredentials(
-        login="not-exists-supplier",
-        password="Test@1234",
-    )
+    supplier_credentials = utils.create_supplier_register_form().credentials
 
     with pytest.raises(supplier.InvalidCredentials):
         supplier.login_supplier(db_connection, supplier_credentials)
