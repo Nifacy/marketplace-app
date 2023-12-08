@@ -27,17 +27,12 @@ paths:
             schema:
               $ref: '#/components/schemas/SupplierRegisterForm'
       responses:
-        '201':
+        '200':
           description: Успешная регистрация
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                example:
-                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic3VwcGxpZXIiLCJpZCI6MSwiZXhwIjoxNzAxOTkyNzIwfQ.1RnPIHFUy42tyZdyEr2pzkz6T_HjOUBV2mAed5MT33I"
+                $ref: '#/components/schemas/Token'
         '422':
           description: Неверный формат данных
         '409':
@@ -60,10 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
+                $ref: '#/components/schemas/SupplierCredentials'
         '422':
           description: Неверный формат данных
         '401':
@@ -293,17 +285,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomerRegisterForm'
       responses:
-        '201':
+        '200':
           description: Успешная регистрация
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  supplier:
-                    $ref: '#/components/schemas/Customer'
-                  token:
-                    type: string
+                $ref: '#/components/schemas/SupplierCredentials'
         '422':
           description: Неверный формат данных
         '409':
@@ -326,10 +313,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
+                $ref: '#/components/schemas/SupplierCredentials'
         '422':
           description: Неверный формат данных
         '401':
@@ -865,3 +849,11 @@ components:
           $ref: '#/components/schemas/Address'
         customer:
           $ref: '#/components/schemas/Customer'
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic3VwcGxpZXIiLCJpZCI6MSwiZXhwIjoxNzAxOTkyNzIwfQ.1RnPIHFUy42tyZdyEr2pzkz6T_HjOUBV2mAed5MT33I"
