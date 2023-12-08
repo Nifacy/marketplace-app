@@ -1,7 +1,7 @@
 import pytest
-
 from app.schemas import ProductInfo
 from app.usecases import product, supplier
+from pydantic import HttpUrl
 from tests import utils
 
 
@@ -44,11 +44,13 @@ def test_product_update(db_connection):
         product.update_product(db_connection, -1, _product.info)
 
     _product.info = ProductInfo(
+        images=[
+            HttpUrl('http://changed-url-1.com'),
+            HttpUrl('http://changed-url-2.com'),
+        ],
+        price=23.33,
         product_name='changed-product-name',
         description='changed-description',
-        images=['http://changed-url-1.com', 'http://changed-url-2.com'],
-        price=23.33,
-        supplier=_supplier,
     )
     
     product.update_product(db_connection, _product.id, _product.info)
