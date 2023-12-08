@@ -62,9 +62,5 @@ class UnableToAddToFavorite(Exception):
     pass
 
 
-class OrderNotFound(Exception):
-    pass
-
-
 class UnableToCreateOrder(Exception):
     pass
