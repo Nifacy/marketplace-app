@@ -1,3 +1,4 @@
+import datetime
 import itertools
 from typing import Callable, TypeVar
 from app import schemas
@@ -65,3 +66,15 @@ def create_product_info_sample(count: int, **kwargs) -> schemas.ProductInfo:
         'description': 'some description here...',
         **kwargs
     })
+
+@with_counter
+def create_address_sample(count: int) -> schemas.Address:
+    return schemas.Address(
+        street=f'Street {count}',
+        city='City',
+        country='Country',
+        postal_code='12345',
+        house=count,
+        entrance=1,
+        appartment=1,
+    )
