@@ -15,6 +15,7 @@ def _init_db(conn: connection) -> None:
         'sql/customer.sql',
         'sql/product.sql',
         'sql/favorites.sql',
+        'sql/orders.sql'
     ]
 
     for file in files:
