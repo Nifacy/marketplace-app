@@ -4,6 +4,7 @@ import string
 from typing import Callable, TypeVar
 
 from app import schemas
+from pydantic import HttpUrl
 
 _T = TypeVar('_T')
 
@@ -72,8 +73,8 @@ def create_customer_info_sample(count: int) -> schemas.CustomerInfo:
 def create_product_info_sample(count: int, **kwargs) -> schemas.ProductInfo:
     return schemas.ProductInfo(**{
         'images': [
-            f'http://example{count}.com',
-            f'http://example{count + 1}.com',
+            HttpUrl(f'http://example{count}.com'),
+            HttpUrl(f'http://example{count + 1}.com'),
         ],
         'price': 100.82,
         'product_name': f'Product #{count}',
