@@ -1,5 +1,6 @@
-from tests import utils
 import pytest
+
+from tests import utils
 
 
 @pytest.mark.asyncio
@@ -22,17 +23,19 @@ async def test_nonexistent_user(test_client):
     response = test_client.post("/customer/login", json=credentials.model_dump())
     assert response.status_code == 401
 
+
 @pytest.mark.asyncio
 def test_wrong_password(test_client):
     register_form = utils.create_customer_register_form()
 
     test_client.post("/customer/register", json=register_form.model_dump())
-    
+
     credentials = register_form.credentials
     credentials.password = f"wrong-{credentials.password}"
-    
+
     response = test_client.post("/customer/login", json=credentials.model_dump())
     assert response.status_code == 401
+
 
 @pytest.mark.asyncio
 def test_successful_login(test_client):

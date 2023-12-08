@@ -1,14 +1,12 @@
 from contextlib import asynccontextmanager
-from urllib.parse import scheme_chars
+
 from fastapi import FastAPI, HTTPException
 
-from . import database
-from . import schemas
-from .usecases import supplier
-from .usecases import customer
-from .usecases import oauth2
+from . import database, schemas
+from .usecases import customer, oauth2, supplier
 
 conn = None
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -27,7 +25,7 @@ async def get_supplier_endpoint(supplier_id: int):
     _supplier = supplier.get_supplier(conn, supplier_id)
 
     if not _supplier:
-        raise HTTPException(status_code=404, detail=f'Supplier not found')
+        raise HTTPException(status_code=404, detail=f"Supplier not found")
 
     return _supplier
 
@@ -37,10 +35,12 @@ async def register_supplier(register_form: schemas.SupplierRegisterForm):
     global conn
     _supplier = supplier.register_supplier(conn, register_form)
     return schemas.Token(
-        token=oauth2.generate_token(oauth2.TokenData(
-            type='supplier',
-            id=_supplier.id
-        )),
+        token=oauth2.generate_token(
+            oauth2.TokenData(
+                type="supplier",
+                id=_supplier.id,
+            ),
+        ),
     )
 
 
@@ -52,10 +52,12 @@ async def login_supplier(credentials: schemas.SupplierCredentials):
         _supplier = supplier.login_supplier(conn, credentials)
 
         return schemas.Token(
-            token=oauth2.generate_token(oauth2.TokenData(
-                type='supplier',
-                id=_supplier.id,
-            ))
+            token=oauth2.generate_token(
+                oauth2.TokenData(
+                    type="supplier",
+                    id=_supplier.id,
+                ),
+            ),
         )
 
     except supplier.InvalidCredentials:
@@ -70,10 +72,12 @@ async def register_customer(register_form: schemas.CustomerRegisterForm):
     global conn
     _customer = customer.register_customer(conn, register_form)
     return schemas.Token(
-        token=oauth2.generate_token(oauth2.TokenData(
-            type='customer',
-            id=_customer.id
-        )),
+        token=oauth2.generate_token(
+            oauth2.TokenData(
+                type="customer",
+                id=_customer.id,
+            ),
+        ),
     )
 
 
@@ -85,10 +89,12 @@ async def login_customer(credentials: schemas.CustomerCredentials):
         _customer = customer.login_customer(conn, credentials)
 
         return schemas.Token(
-            token=oauth2.generate_token(oauth2.TokenData(
-                type='customer',
-                id=_customer.id,
-            ))
+            token=oauth2.generate_token(
+                oauth2.TokenData(
+                    type="customer",
+                    id=_customer.id,
+                )
+            )
         )
 
     except supplier.InvalidCredentials:

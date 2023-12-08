@@ -1,8 +1,9 @@
 import itertools
-from typing import Callable, TypeVar
-from app import schemas
 import random
 import string
+from typing import Callable, TypeVar
+
+from app import schemas
 
 _T = TypeVar('_T')
 

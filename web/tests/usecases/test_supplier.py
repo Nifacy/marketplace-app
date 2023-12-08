@@ -1,5 +1,6 @@
 import pytest
-from app.schemas import SupplierRegisterForm, SupplierCredentials
+
+from app.schemas import SupplierCredentials, SupplierRegisterForm
 from app.usecases import supplier
 from tests import utils
 

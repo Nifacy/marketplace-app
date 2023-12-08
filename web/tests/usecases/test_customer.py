@@ -2,7 +2,6 @@ import pytest
 
 from app.schemas import CustomerCredentials, CustomerRegisterForm
 from app.usecases import customer
-
 from tests import utils
 
 
