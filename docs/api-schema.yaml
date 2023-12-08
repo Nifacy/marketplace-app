@@ -38,7 +38,7 @@ paths:
                     type: string
                 example:
                   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic3VwcGxpZXIiLCJpZCI6MSwiZXhwIjoxNzAxOTkyNzIwfQ.1RnPIHFUy42tyZdyEr2pzkz6T_HjOUBV2mAed5MT33I"
-        '400':
+        '422':
           description: Неверный формат данных
         '409':
           description: Пользователь уже существует
@@ -64,7 +64,7 @@ paths:
                 properties:
                   token:
                     type: string
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный логин или пароль
@@ -88,7 +88,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Supplier'
-        '400':
+        '422':
           description: Неверный формат данных
         '404':
           description: Продавец не найден
@@ -130,7 +130,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Supplier'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
@@ -175,7 +175,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
@@ -232,7 +232,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
@@ -304,7 +304,7 @@ paths:
                     $ref: '#/components/schemas/Customer'
                   token:
                     type: string
-        '400':
+        '422':
           description: Неверный формат данных
         '409':
           description: Пользователь уже существует
@@ -330,7 +330,7 @@ paths:
                 properties:
                   token:
                     type: string
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный логин или пароль
@@ -354,7 +354,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
-        '400':
+        '422':
           description: Неверный формат данных
         '404':
           description: Продавец не найден
@@ -396,7 +396,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
@@ -440,7 +440,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
@@ -506,7 +506,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
+        '422':
           description: Неверный формат данных
         '403':
           description: Доступ запрещен
@@ -623,7 +623,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
+        '422':
           description: Неверный формат данных
         '401':
           description: Неверный токен
