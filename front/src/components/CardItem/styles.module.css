@@ -1,0 +1,19 @@
+.card {
+  width: 170px;
+  height: 220px;
+  border: 1px solid gray;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card img {
+  width: 130px;
+  height: 130px;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+}
