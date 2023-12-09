@@ -13,6 +13,7 @@ def _get_order(conn: psycopg2.extensions.connection, order_id: int) -> Order:
     cur.callproc('get_order', (order_id,))
 
     order_data = cur.fetchone()
+    
     cur.close()
 
     if order_data is None:
