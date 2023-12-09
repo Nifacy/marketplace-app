@@ -102,16 +102,15 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             detail="Wrong login or password",
         )
 
-
+# TODO: add
+# user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
+# to the list of arguments
 @app.get("/customer/{id}", response_model=schemas.Customer)
 async def get_customer_endpoint(
     conn: DependsDBConnection, 
-    id: int,
-    user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
+    id: int
     ):
     try:
         return customer.get_customer(conn, id)
     except customer.CustomerNotFound:
         raise HTTPException(status_code=404, detail="Customer not found")
-
-

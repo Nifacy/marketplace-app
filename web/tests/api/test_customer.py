@@ -3,11 +3,13 @@ import pytest
 from app import schemas
 from tests import utils
 from app.usecases import customer
+from app.dependencies.database import get_connection
 
+# TODO: fix after db_connection is fixed
 @pytest.mark.asyncio
-async def test_get_customer_success(test_client, db_connection):
+async def test_get_customer_success(test_client):
     expected_customer_info = utils.create_customer_info_sample()
-    created_customer = customer.create_customer(db_connection, expected_customer_info)
+    created_customer = customer.create_customer(get_connection(), expected_customer_info)
 
     response = test_client.get(f"/customer/{created_customer.id}")
 
