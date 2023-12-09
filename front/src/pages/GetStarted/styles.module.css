@@ -1,0 +1,29 @@
+.main {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to right, #d8e0de 60%, #fdffff 40%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px 0;
+}
+
+p {
+  font-size: 36px;
+  font-weight: bold;
+  color: #5a5a5a;
+  max-width: 460px;
+}
+
+.getStarted {
+  text-align: center;
+  margin-right: 150px; /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+}
+
+.getStartedButtons {
+  margin-top: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}

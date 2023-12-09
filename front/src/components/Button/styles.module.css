@@ -1,0 +1,18 @@
+.button {
+  width: 205px;
+  height: 60px;
+  color: white;
+  background-color: #72cab6;
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: bold;
+  transition: all 0.2s ease-in;
+}
+
+.button:hover {
+  background-color: #62ae9c;
+}
+
+.button:focus {
+  background-color: #62ae9c;
+}
