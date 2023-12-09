@@ -57,7 +57,7 @@ def _match_error_to_usecase_exception(error_message: str):
     
     raise ValueError(f"Can't match usecase exception for {error_message!r}")
 
-
+# TODO: что-то, не знаю, что
 def get_products(conn: psycopg2.extensions.connection, filters: SearchFilters) -> list[Product]:
     cur = conn.cursor()
     cur.callproc('get_products', (
