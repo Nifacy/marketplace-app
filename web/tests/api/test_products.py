@@ -1,4 +1,6 @@
 from fastapi.testclient import TestClient
+from httpx import HTTPStatusError
+import pytest
 from app import schemas
 from app.dependencies import database
 from app.usecases import product, supplier, customer, oauth2, favorites
@@ -84,6 +86,13 @@ def get_products(test_client: TestClient, token: schemas.Token, name: str | None
     assert response.status_code == 200
     return [schemas.Product.model_validate(p) for p in response.json()]
 
+def get_product_by_id(test_client: TestClient, token: schemas.Token, product_id: int) -> schemas.Product:
+    headers = {"Authorization": f"Bearer {token.token}"}
+    response = test_client.get(f"/product/{product_id}", headers=headers)
+
+    response.raise_for_status()
+    return schemas.Product.model_validate(response.json())
+
 # tests
 
 def test_blocks_not_authenticated_requests(test_client):
@@ -115,3 +124,18 @@ def test_favorites_available_for_customer(test_client):
     for p in found_products:
         if p in favorite_products:
             assert p.in_favorites
+
+def test_get_single_product(test_client):
+    customer_token, _ = create_customer(test_client)
+    products = create_products_sample(test_client)
+
+    found_product = get_product_by_id(test_client, customer_token, products[0].id)
+    assert found_product == products[0]
+
+def test_raises_404_if_product_not_exists(test_client):
+    customer_token, _ = create_customer(test_client)
+
+    with pytest.raises(HTTPStatusError) as e:
+        get_product_by_id(test_client, customer_token, -1)
+    
+    assert e.value.response.status_code == 404
