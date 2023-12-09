@@ -5,8 +5,8 @@ from fastapi import Depends, FastAPI, HTTPException
 import psycopg2.extensions
 
 from . import database, schemas
-from .usecases import customer, oauth2, supplier
-from .dependencies import database
+from .usecases import customer, oauth2, supplier, product, favorites
+from .dependencies import database, get_current_user
 
 
 DependsDBConnection = Annotated[
@@ -14,6 +14,11 @@ DependsDBConnection = Annotated[
     Depends(database.get_connection),
 ]
 
+
+DependsAuth = Annotated[
+    schemas.Customer | schemas.Supplier,
+    Depends(get_current_user),
+]
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -101,3 +106,19 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             status_code=401,
             detail="Wrong login or password",
         )
+
+
+@app.get("/product")
+async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str | None = None) -> list[schemas.Product]:
+    _products = product.get_products(conn, product.SearchFilters(name=name))
+    
+    if isinstance(user, schemas.Customer):
+        favorite_products = favorites.get_favorites(conn, user.id)
+        favorite_ids = set(p.id for p in favorite_products)
+    else:
+        favorite_ids = set()
+    
+    for p in _products:
+        p.in_favorites = p.id in favorite_ids
+    
+    return _products
