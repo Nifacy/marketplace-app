@@ -23,7 +23,7 @@ def test_order_creation_product_not_exists(db_connection):
     _, _, created_customer = setup_test_data(db_connection)
 
     order_sample = schemas.OrderCreateSchema(
-        product_id=9999,
+        product_id=-1,
         target_address=utils.create_address_sample()
     )
     
@@ -41,9 +41,9 @@ def test_order_creation_success(db_connection):
 
     created_order = orders.create_order(db_connection, order_sample, created_customer)
 
-    assert created_order.product_id == created_product.id
+    assert created_order.product == product._get_product(db_connection, created_product.id)
     assert created_order.target_address == order_sample.target_address
-    assert created_order.customer_id == created_customer.id
+    assert created_order.customer == created_customer
 
 
 def test_order_search_filter(db_connection):
@@ -60,8 +60,8 @@ def test_order_search_filter(db_connection):
     assert len(found_orders) > 0
     assert any(order.id == created_order.id for order in found_orders)
     for order in found_orders:
-        assert order.customer_id == created_customer.id
-        assert order.product_id == created_product.id
+        assert order.customer == created_customer
+        assert order.product == product._get_product(db_connection, created_product.id)
 
 
 def test_order_status_update(db_connection):
@@ -77,5 +77,5 @@ def test_order_status_update(db_connection):
 
     assert updated_order.status == schemas.OrderStatus.paid
     assert updated_order.id == created_order.id
-    assert updated_order.product_id == created_product.id
-    assert updated_order.customer_id == created_customer.id
+    assert updated_order.product == product._get_product(db_connection, created_product.id)
+    assert updated_order.customer == created_customer

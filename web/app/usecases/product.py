@@ -136,3 +136,10 @@ def remove_product_from_sale(conn: psycopg2.extensions.connection, product_id: i
             raise UnableToUpdateProduct()
 
     return get_products(conn, SearchFilters(product_id=product_id))[0]
+
+
+def _get_product(conn: psycopg2.extensions.connection, product_id: int) -> Product:
+    products = get_products(conn, SearchFilters(product_id=product_id))
+    if not products:
+        raise ProductNotFound()
+    return products[0]

@@ -64,3 +64,15 @@ class UnableToAddToFavorite(Exception):
 
 class UnableToCreateOrder(Exception):
     pass
+
+
+class OrderNotFound(Exception):
+    pass
+
+
+class UnableToUpdateOrder(Exception):
+    pass
+
+
+class UnableToGetOrder(Exception):
+    pass

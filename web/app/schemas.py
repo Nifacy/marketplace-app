@@ -153,7 +153,7 @@ class Order(BaseModel):
     status: OrderStatus
     cancel_description: str | None
     price: float
-    product_id: int
+    product: Product
     creation_datetime: datetime
     target_address: Address
-    customer_id: int
+    customer: Customer
