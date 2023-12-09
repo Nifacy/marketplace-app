@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import random
 import string
@@ -82,6 +83,17 @@ def create_product_info_sample(count: int, **kwargs) -> schemas.ProductInfo:
         **kwargs
     })
 
+@with_counter
+def create_address_sample(count: int) -> schemas.Address:
+    return schemas.Address(
+        street=f'Street {count}',
+        city='City',
+        country='Country',
+        postal_code='12345',
+        house=count,
+        entrance=1,
+        appartment=1,
+    )
 
 @with_counter
 def create_customer_register_form(count: int) -> schemas.CustomerRegisterForm:

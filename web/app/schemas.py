@@ -1,5 +1,7 @@
+from enum import Enum
 from typing import Literal
 from typing_extensions import Annotated
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, HttpUrl, validator, constr, StringConstraints
 import re
 
@@ -132,5 +134,31 @@ class TokenData(BaseModel):
     id: int
 
 
+class OrderStatus(str, Enum):
+    created = "CREATED"
+    confirmed = "CONFIRMED"
+    paid = "PAID"
+    sent_to_delivery = "SENT_TO_DELIVERY"
+    picked_up = "PICKED_UP"
+    canceled = "CANCELED"
+
+
+class OrderCreateSchema(BaseModel):
+    product_id: int
+    target_address: Address
+
+
+class Order(BaseModel):
+    id: int
+    status: OrderStatus
+    cancel_description: str | None
+    price: float
+    product: Product
+    creation_datetime: datetime
+    target_address: Address
+    customer: Customer
+
+      
 class Token(BaseModel):
     token: str
+

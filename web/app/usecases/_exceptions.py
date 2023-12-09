@@ -30,26 +30,11 @@ class UnableToCreateSupplier(Exception):
     pass
 
 
-class UnableToCreateCustomer(Exception):
-    pass
-
 class CustomerNotFound(Exception):
     pass
 
 
 class UnableToCreateCustomer(Exception):
-    pass
-
-
-class UnableToCreateProduct(Exception):
-    pass
-
-
-class ProductNotFound(Exception):
-    pass
-
-
-class UnableToUpdateProduct(Exception):
     pass
 
 
@@ -74,4 +59,20 @@ class UnableDecodeToken(Exception):
 
 
 class UnableToAddToFavorite(Exception):
+    pass
+
+
+class UnableToCreateOrder(Exception):
+    pass
+
+
+class OrderNotFound(Exception):
+    pass
+
+
+class UnableToUpdateOrder(Exception):
+    pass
+
+
+class UnableToGetOrder(Exception):
     pass
