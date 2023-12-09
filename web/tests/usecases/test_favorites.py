@@ -1,4 +1,5 @@
 import pytest
+
 from app import schemas
 from app.usecases import customer, favorites, product, supplier
 from tests import utils
