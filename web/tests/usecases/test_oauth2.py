@@ -1,6 +1,8 @@
 import pytest
+
 from app.schemas import TokenData
-from app.usecases.oauth2 import generate_token, decode_token
+from app.usecases.oauth2 import decode_token, generate_token
+
 
 def test_token_encoding_and_decoding():
     data = TokenData(type='supplier', id=123)

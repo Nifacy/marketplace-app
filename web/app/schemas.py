@@ -157,3 +157,8 @@ class Order(BaseModel):
     creation_datetime: datetime
     target_address: Address
     customer: Customer
+
+      
+class Token(BaseModel):
+    token: str
+
