@@ -6,7 +6,7 @@ import psycopg2.extensions
 
 from . import database, schemas
 from .usecases import customer, oauth2, supplier
-from .dependencies import database
+from .dependencies import database, get_current_user
 
 
 DependsDBConnection = Annotated[
@@ -101,3 +101,17 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             status_code=401,
             detail="Wrong login or password",
         )
+
+
+@app.get("/customer/{id}", response_model=schemas.Customer)
+async def get_customer_endpoint(
+    conn: DependsDBConnection, 
+    id: int,
+    user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
+    ):
+    try:
+        return customer.get_customer(conn, id)
+    except customer.CustomerNotFound:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+
