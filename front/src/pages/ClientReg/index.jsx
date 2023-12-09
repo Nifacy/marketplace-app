@@ -11,6 +11,9 @@ export const ClientReg = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
@@ -53,6 +56,12 @@ export const ClientReg = () => {
   const handleOnChangeBuilding = (event) => {
     setBuilding(event.target.value);
   };
+  const handleOnChangeLogin = (event) => {
+    setLogin(event.target.value);
+  };
+  const handleOnChangePassword = (event) => {
+    setPassword(event.target.value);
+  };
 
   async function handleEnter() {
     try {
@@ -85,6 +94,11 @@ export const ClientReg = () => {
   return (
     <div className={styles.main}>
       <h3>Welcome first</h3>
+      <h4>Данные для входа:</h4>
+      <div className={styles.personal}>
+        <Input value={login} onChange={handleOnChangeLogin} placeholder="Логин" type="text" />
+        <Input value={password} onChange={handleOnChangePassword} placeholder="Пароль" type="password" />
+      </div>
       <h4>Личные данные:</h4>
       <div className={styles.personal}>
         <Input value={name} onChange={handleOnChangeName} placeholder="Имя" type="text" />
