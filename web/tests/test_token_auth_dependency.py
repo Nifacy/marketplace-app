@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from jose import jwt
 
 from app import schemas
-from app.dependencies import AccountAuthenticator
+from app.dependencies.auth import AccountAuthenticator
 from app.usecases import customer, oauth2, supplier
 from tests import utils
 

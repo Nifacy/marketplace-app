@@ -6,6 +6,7 @@ from app import schemas
 from app.usecases import customer, oauth2, supplier
 
 
+
 class AccountAuthenticator:
     __auth_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
