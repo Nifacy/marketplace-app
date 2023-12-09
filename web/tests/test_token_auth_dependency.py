@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from jose import jwt
 
 from app import schemas
-from app.dependencies import AccountAuthenticator
+from app.dependencies import get_current_user
 from app.usecases import customer, oauth2, supplier
 from tests import utils
 
@@ -25,8 +25,7 @@ def test_get_current_user_supplier(db_connection):
     token_data = schemas.TokenData(type="supplier", id=created_supplier.id)
     token = oauth2.generate_token(token_data)
 
-    authenticiator = AccountAuthenticator(db_connection)
-    user = authenticiator(token)
+    user = get_current_user(db_connection, token)
 
     assert isinstance(user, schemas.Supplier)
     assert user == created_supplier
@@ -38,25 +37,23 @@ def test_get_current_user_customer(db_connection):
     token_data = schemas.TokenData(type="customer", id=created_customer.id)
     token = oauth2.generate_token(token_data)
 
-    authenticiator = AccountAuthenticator(db_connection)
-    user = authenticiator(token)
+    user = get_current_user(db_connection, token)
 
     assert isinstance(user, schemas.Customer)
     assert user == created_customer
 
 
 def test_get_non_existent_user(db_connection):
-    authenticiator = AccountAuthenticator(db_connection)
     non_existent_supplier = schemas.TokenData(type="supplier", id=-1)
     non_existent_customer = schemas.TokenData(type="customer", id=-1)
 
     with raises_unautharized_error():
         token = oauth2.generate_token(non_existent_supplier)
-        authenticiator(token)
+        get_current_user(db_connection, token)
 
     with raises_unautharized_error():
         token = oauth2.generate_token(non_existent_customer)
-        authenticiator(token)
+        get_current_user(db_connection, token)
 
 
 @pytest.mark.parametrize(
@@ -69,15 +66,13 @@ def test_get_non_existent_user(db_connection):
 )
 def test_validation_token_handles(db_connection, sample):
     token = jwt.encode(sample, "VERY_SECRET_KEY", algorithm="HS256")
-    authenticiator = AccountAuthenticator(db_connection)
 
     with raises_unautharized_error():
-        authenticiator(token)
+        get_current_user(db_connection, token)
 
 
 def test_get_current_user_random_string(db_connection):
     token = "random_string"
-    authenticiator = AccountAuthenticator(db_connection)
 
     with raises_unautharized_error():
-        authenticiator(token)
+        get_current_user(db_connection, token)

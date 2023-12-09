@@ -1,27 +1,32 @@
 from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+import psycopg2.extensions
 
 from . import database, schemas
 from .usecases import customer, oauth2, supplier
+from .dependencies import database
 
-conn = None
+
+DependsDBConnection = Annotated[
+    psycopg2.extensions.connection,
+    Depends(database.get_connection),
+]
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    global conn
-    conn = database.connect(database.from_settings)
+    database.open_connection()
     yield
-    conn.close()
+    database.close_connection()
 
 
 app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/suppliers/{supplier_id}", response_model=schemas.Supplier)
-async def get_supplier_endpoint(supplier_id: int):
-    global conn
+async def get_supplier_endpoint(conn: DependsDBConnection, supplier_id: int):
     _supplier = supplier.get_supplier(conn, supplier_id)
 
     if not _supplier:
@@ -31,8 +36,7 @@ async def get_supplier_endpoint(supplier_id: int):
 
 
 @app.post("/supplier/register", response_model=schemas.Token)
-async def register_supplier(register_form: schemas.SupplierRegisterForm):
-    global conn
+async def register_supplier(conn: DependsDBConnection, register_form: schemas.SupplierRegisterForm):
     _supplier = supplier.register_supplier(conn, register_form)
     return schemas.Token(
         token=oauth2.generate_token(
@@ -45,9 +49,7 @@ async def register_supplier(register_form: schemas.SupplierRegisterForm):
 
 
 @app.post("/supplier/login", response_model=schemas.Token)
-async def login_supplier(credentials: schemas.SupplierCredentials):
-    global conn
-
+async def login_supplier(conn: DependsDBConnection, credentials: schemas.SupplierCredentials):
     try:
         _supplier = supplier.login_supplier(conn, credentials)
 
@@ -68,8 +70,7 @@ async def login_supplier(credentials: schemas.SupplierCredentials):
 
 
 @app.post("/customer/register", response_model=schemas.Token)
-async def register_customer(register_form: schemas.CustomerRegisterForm):
-    global conn
+async def register_customer(conn: DependsDBConnection, register_form: schemas.CustomerRegisterForm):
     _customer = customer.register_customer(conn, register_form)
     return schemas.Token(
         token=oauth2.generate_token(
@@ -82,9 +83,7 @@ async def register_customer(register_form: schemas.CustomerRegisterForm):
 
 
 @app.post("/customer/login", response_model=schemas.Token)
-async def login_customer(credentials: schemas.CustomerCredentials):
-    global conn
-
+async def login_customer(conn: DependsDBConnection, credentials: schemas.CustomerCredentials):
     try:
         _customer = customer.login_customer(conn, credentials)
 
