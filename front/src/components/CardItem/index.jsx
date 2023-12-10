@@ -2,28 +2,22 @@ import React, { useEffect, useState } from "react";
 import ContentLoader from "react-content-loader";
 import styles from "./styles.module.css";
 
+import { api } from "../../api";
+
 export const CardItem = (props) => {
-  const { name, price, url, isLoading = false } = props;
-  const [fav, setFav] = useState(false);
+  const { productId, name, price, url, isLoading = false, initialFav = false } = props;
+  const [fav, setFav] = useState(initialFav);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const resp = await fetch(`http://localhost:3000/item/:id/favorite`).then((res) => res.json()); // запрос избранного
-        setFav(resp);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchData();
-  }, []);
+    setFav(initialFav);
+  }, [initialFav]);
 
   async function handleOnChnageFavorite() {
     try {
       if (fav) {
-        // запрос на удаление из избранного
+        await api.removeFromFavorites(productId);
       } else {
-        // запрос на добавление в избранное
+        await api.addToFavorites(productId);
       }
       setFav(!fav);
     } catch (error) {

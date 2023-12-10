@@ -6,7 +6,7 @@ import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { Navigation } from "../../App";
 
-import * as tokenManager from "../../tokenManager";
+import * as tokenManager from "../../api/tokenManager";
 import * as api from "../../api";
 
 export const Login = () => {

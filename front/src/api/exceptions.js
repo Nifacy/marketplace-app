@@ -18,3 +18,17 @@ export class InvalidCredentials extends Error {
     this.credentials = credentials;
   }
 }
+
+
+export class Unauthorized extends Error {
+  constructor() {
+    super("Unauthorized. Token not specified or invalid.");
+  }
+}
+
+
+export class NotFound extends Error {
+  constructor() {
+    super("Requested entity not found");
+  }
+}

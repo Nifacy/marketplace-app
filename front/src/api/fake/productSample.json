@@ -1,0 +1,178 @@
+[
+    {
+      "id": 12346,
+      "in_favorites": false,
+      "info": {
+        "images": [
+          "https://cdn-images.farfetch-contents.com/22/32/90/72/22329072_52189015_480.jpg",
+          "http://example.com/images/5.jpg",
+          "http://example.com/images/6.jpg"
+        ],
+        "price": 124.32,
+        "product_name": "Товар 1",
+        "description": "Отличный товар, но иногда вызывает аллергию"
+      },
+      "supplier": {
+        "id": 7798435764373,
+        "info": {
+          "name": "ООО Яблоки",
+          "contacts": {
+            "phone": "+8 (800) 555 35 36",
+            "email": "myHusband@left.me",
+            "telegram": "@aaa",
+            "whatsapp": "+8 (800) 555 35 36"
+          },
+          "address": {
+            "street": "Петровской",
+            "city": "Санкт-Петербург",
+            "country": "Россия",
+            "postal_code": "723048",
+            "house": 15,
+            "entrance": 33,
+            "appartment": 3
+          }
+        }
+      }
+    },
+    {
+      "id": 12347,
+      "in_favorites": false,
+      "info": {
+        "images": [
+          "https://cdn-images.farfetch-contents.com/21/72/90/90/21729090_51612597_480.jpg",
+          "http://example.com/images/8.jpg",
+          "http://example.com/images/9.jpg"
+        ],
+        "price": 125.32,
+        "product_name": "Товар 2",
+        "description": "Хороший товар, но иногда вызывает головокружение"
+      },
+      "supplier": {
+        "id": 7798435764374,
+        "info": {
+          "name": "ООО Груши",
+          "contacts": {
+            "phone": "+8 (800) 555 35 37",
+            "email": "mySon@left.me",
+            "telegram": "@bbb",
+            "whatsapp": "+8 (800) 555 35 37"
+          },
+          "address": {
+            "street": "Сидоровской",
+            "city": "Новосибирск",
+            "country": "Россия",
+            "postal_code": "723049",
+            "house": 16,
+            "entrance": 34,
+            "appartment": 4
+          }
+        }
+      }
+    },
+    {
+      "id": 12348,
+      "in_favorites": false,
+      "info": {
+        "images": [
+          "https://www.buysnus.com/Pictures/medium/1355.jpg",
+          "http://example.com/images/11.jpg",
+          "http://example.com/images/12.jpg"
+        ],
+        "price": 126.32,
+        "product_name": "Товар 3",
+        "description": "Неплохой товар, но иногда вызывает тошноту"
+      },
+      "supplier": {
+        "id": 7798435764375,
+        "info": {
+          "name": "ООО Апельсины",
+          "contacts": {
+            "phone": "+8 (800) 555 35 38",
+            "email": "myDaughter@left.me",
+            "telegram": "@ccc",
+            "whatsapp": "+8 (800) 555 35 38"
+          },
+          "address": {
+            "street": "Ивановской",
+            "city": "Екатеринбург",
+            "country": "Россия",
+            "postal_code": "723050",
+            "house": 17,
+            "entrance": 35,
+            "appartment": 5
+          }
+        }
+      }
+    },
+    {
+      "id": 12349,
+      "in_favorites": false,
+      "info": {
+        "images": [
+          "https://cdn-images.farfetch-contents.com/20/46/82/37/20468237_52273053_480.jpg",
+          "http://example.com/images/14.jpg",
+          "http://example.com/images/15.jpg"
+        ],
+        "price": 127.32,
+        "product_name": "Товар 4",
+        "description": "Средний товар, но иногда вызывает кашель"
+      },
+      "supplier": {
+        "id": 7798435764376,
+        "info": {
+          "name": "ООО Ананасы",
+          "contacts": {
+            "phone": "+8 (800) 555 35 39",
+            "email": "myDog@left.me",
+            "telegram": "@ddd",
+            "whatsapp": "+8 (800) 555 35 39"
+          },
+          "address": {
+            "street": "Смирновской",
+            "city": "Казань",
+            "country": "Россия",
+            "postal_code": "723051",
+            "house": 18,
+            "entrance": 36,
+            "appartment": 6
+          }
+        }
+      }
+    },
+    {
+      "id": 12350,
+      "in_favorites": false,
+      "info": {
+        "images": [
+          "https://cdn-images.farfetch-contents.com/21/23/57/01/21235701_51247422_480.jpg",
+          "http://example.com/images/17.jpg",
+          "http://example.com/images/18.jpg"
+        ],
+        "price": 128.32,
+        "product_name": "Товар 5",
+        "description": "Плохой товар, но иногда вызывает сонливость"
+      },
+      "supplier": {
+        "id": 7798435764377,
+        "info": {
+          "name": "ООО Киви",
+          "contacts": {
+            "phone": "+8 (800) 555 35 40",
+            "email": "myCat@left.me",
+            "telegram": "@eee",
+            "whatsapp": "+8 (800) 555 35 40"
+          },
+          "address": {
+            "street": "Петровской",
+            "city": "Самара",
+            "country": "Россия",
+            "postal_code": "723052",
+            "house": 19,
+            "entrance": 37,
+            "appartment": 7
+          }
+        }
+      }
+    }
+  ]
+  

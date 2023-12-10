@@ -6,7 +6,7 @@ import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
 import * as api from "../../api";
-import * as tokenManager from "../../tokenManager";
+import * as tokenManager from "../../api/tokenManager";
 
 export const ClientReg = () => {
   const navigate = useNavigate();

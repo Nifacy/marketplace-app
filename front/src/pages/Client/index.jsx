@@ -5,14 +5,10 @@ import { Nav } from "../../components/Nav";
 import { CardItem } from "../../components/CardItem";
 import { Input } from "../../components/Input";
 
+import * as api from "../../api"
+
 export const Client = () => {
-  const [items, setItems] = useState([
-    {
-      url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
-      name: "qweqweqwe",
-      price: 123,
-    },
-  ]);
+  const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -24,8 +20,19 @@ export const Client = () => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const items = await fetch(`http://localhost:3000/ALLitems`).then((res) => res.json()); // id, name, price
-        setItems(items);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        let _items = [];
+
+        for (const product of await api.api.getProducts()) {
+          _items.push({
+            productId: product.id,
+            url: product.info.images[0],
+            name: product.info.product_name,
+            price: product.info.price,
+            initialFav: product.in_favorites,
+          });
+        }
+        setItems(_items);
       } catch (error) {
         console.log(error);
       } finally {
@@ -37,7 +44,7 @@ export const Client = () => {
 
   const renderItems = () => {
     return (
-      isLoading ? [...Array(8)] : items.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))
+      isLoading ? [...Array(8)] : items
     ).map((item, index) => {
       return <CardItem {...item} key={index} isLoading={isLoading} />;
     });
