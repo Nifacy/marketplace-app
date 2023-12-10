@@ -1,0 +1,50 @@
+[
+    {
+       "id":0,
+       "credentials":{
+          "login":"customer-1",
+          "password":"password123&"
+       },
+       "info":{
+          "first_name":"Иван",
+          "last_name":"Иванов",
+          "contacts":{
+             "phone":"+8 (496) 333 92-61",
+             "email":"example.mail@mail.com"
+          },
+          "address":{
+             "street":"ул. Арбат",
+             "city":"Москва",
+             "country":"Россия",
+             "postal_code":"12345",
+             "house":123,
+             "entrance":45,
+             "appartment":2
+          }
+       }
+    },
+    {
+       "id":1,
+       "credentials":{
+          "login":"customer-2",
+          "password":"password123&"
+       },
+       "info":{
+          "first_name":"Татьяна",
+          "last_name":"Ивашкина",
+          "contacts":{
+             "phone":"+8 (800) 333 22 11",
+             "email":"i.love.bebra@myami.ru"
+          },
+          "address":{
+             "street":"Wall st.",
+             "city":"Нью-Йорк",
+             "country":"США",
+             "postal_code":"12345",
+             "house":4325432,
+             "entrance":222,
+             "appartment":2
+          }
+       }
+    }
+ ]

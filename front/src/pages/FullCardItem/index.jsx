@@ -1,30 +1,39 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { Navigation } from "../../App";
+import { useParams } from 'react-router-dom';
 
 import { Nav } from "../../components/Nav";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
+import { api, tokenManager } from "../../api";
+
 export const FullCardItem = () => {
-  const { isClient, clientId, customerId, itemId } = useContext(Navigation);
   const navigate = useNavigate();
+  const { itemId } = useParams();
+  const isClient = tokenManager.getToken().type === "customer";
+  const userId = tokenManager.getToken().id;
   const [fav, setFav] = useState(false);
+
+  const productId = parseInt(itemId);
 
   const [item, setItem] = useState({
     url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
-    name: "qweqweqwe",
-    description: "asdasdasdads",
-    customer: "blalbalba",
-    price: 123,
+    name: "Loading...",
+    description: "",
+    customer: "",
+    price: 0,
   });
+
   // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
+      console.log("fetch data...");
       try {
-        const resp = await fetch(`http://localhost:3000/item/:id/favorite`).then((res) => res.json()); // запрос избранного
-        setFav(resp);
+        const favoriteIds = (await api.getFavorites()).map((product) => product.id);
+        setFav(favoriteIds.includes(productId));
       } catch (error) {
         console.log(error);
       }
@@ -36,7 +45,14 @@ export const FullCardItem = () => {
     async function fetchData() {
       try {
         // setIsLoading(true);
-        const item = await fetch(`http://localhost:3000/item/:id`).then((res) => res.json()); // товар
+        const product = await api.getProduct(productId);
+        const item = {
+          url: product.info.images[0],
+          name: product.info.product_name,
+          description: product.info.description,
+          customer: product.supplier.info.name,
+          price: product.info.price,
+        };
         setItem(item);
       } catch (error) {
         console.log(error);
@@ -50,9 +66,9 @@ export const FullCardItem = () => {
   async function handleOnChnageFavorite() {
     try {
       if (fav) {
-        // запрос на удаление из избранного
+        await api.removeFromFavorites(productId);
       } else {
-        // запрос на добавление в избранное
+        await api.addToFavorites(productId);
       }
       setFav(!fav);
     } catch (error) {
@@ -63,24 +79,10 @@ export const FullCardItem = () => {
   const handleOnClickBuy = async () => {
     try {
       // setIsLoading(true);
-      const data = {
-        // ваш объект данных (ключ - значение)
-      };
+      await api.createOrder(productId);
 
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      };
-
-      const buyResponse = await fetch(`http://localhost:3000/orders/add`, requestOptions).then((response) =>
-        response.json()
-      ); // добавление заказа
-
-      if (buyResponse) {
-        const path = isClient ? `/client/${clientId}/orders` : `/customer/${customerId}/orders`;
-        navigate(path);
-      }
+      const path = isClient ? `/client/${userId}/orders` : `/customer/${userId}/orders`;
+      navigate(path);
     } catch (error) {
       console.log(error);
     } finally {
@@ -89,7 +91,7 @@ export const FullCardItem = () => {
   };
 
   const handleOnClickUpdate = () => {
-    const pathUpd = `/customer/${customerId}/item/${itemId}/edit`;
+    const pathUpd = `/customer/${userId}/item/${itemId}/edit`;
     navigate(pathUpd);
   };
 
@@ -110,17 +112,17 @@ export const FullCardItem = () => {
             </div>
             <div className={styles.buttons}>
               {isClient && (
-                <Button onChange={handleOnClickBuy} size="250">
+                <Button onClick={handleOnClickBuy} size="250">
                   Купить
                 </Button>
               )}
               {isClient && (
-                <Button onChange={handleOnChnageFavorite} color="gray" size="250">
+                <Button onClick={handleOnChnageFavorite} color="gray" size="250">
                   {fav ? "Убрать из" : "Добавить в"} wishlist
                 </Button>
               )}
               {!isClient && (
-                <Button onChange={handleOnClickUpdate} size="250">
+                <Button onClick={handleOnClickUpdate} size="250">
                   Редактировать
                 </Button>
               )}

@@ -4,21 +4,23 @@ import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
 import { Navigation } from "../../App";
 
-import { api } from "../../api";
+import { api, tokenManager } from "../../api";
 
 export const CardItem = (props) => {
-  const { isClient, itemId, setItemId, clientId, customerId } = useContext(Navigation);
+  const { setItemId } = useContext(Navigation);
   const { id, productId, name, price, url, isLoading = false, initialFav = false } = props;
   const [fav, setFav] = useState(initialFav);
+  const isClient = tokenManager.getToken().type === "customer";
+  const userId = tokenManager.getToken().id;
   
-  setItemId(id);
-  const itemPath = isClient ? `/client/${clientId}/item/${itemId}` : `/customer/${customerId}/item/${itemId}`;
+  const itemPath = isClient ? `/client/${userId}/item/${productId}` : `/customer/${userId}/item/${productId}`;
 
   useEffect(() => {
     setFav(initialFav);
   }, [initialFav]);
 
   async function handleOnChnageFavorite() {
+    console.log("+++");
     try {
       if (fav) {
         await api.removeFromFavorites(productId);
@@ -52,7 +54,7 @@ export const CardItem = (props) => {
       ) : (
         <>
           <div className={styles.card}>
-            <Link to={itemPath}>
+            <Link to={itemPath} onClick={() => {setItemId(productId);}}>
               <img alt="1" src={url} />
             </Link>
             <div className={styles.info}>
@@ -60,7 +62,7 @@ export const CardItem = (props) => {
                 <h5>{name}</h5>
                 <h5>{price} $</h5>
               </div>
-              <button onClick={handleOnChnageFavorite}>
+              <div onClick={handleOnChnageFavorite}>
                 {fav ? (
                   <svg width="18" height="17" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -76,7 +78,7 @@ export const CardItem = (props) => {
                     />
                   </svg>
                 )}
-              </button>
+              </div>
             </div>
           </div>
         </>

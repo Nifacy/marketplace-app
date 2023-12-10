@@ -44,16 +44,16 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/client/registration" element={<ClientReg />} />
           <Route path="/customer/registration" element={<CustomerReg />} />
-          <Route path="/client/:id" element={<Client />} />
-          <Route path="/customer/:id" element={<Customer />} />
-          <Route path="/client/:id/favorited" element={<ClientFav />} />
-          <Route path="/client/:id/orders" element={<Orders />} />
-          <Route path="/customer/:id/orders" element={<Orders />} />
-          <Route path="/client/:id/item/:id" element={<FullCardItem />} />
-          <Route path="/customer/:id/item/:id" element={<FullCardItem />} />
-          <Route path="/client/:id/order/:id" element={<FullOrderItem />} />
-          <Route path="/customer/:id/order/:id" element={<FullOrderItem />} />
-          <Route path="/customer/:id/item/:id/edit" element={<FullCardEdit />} />
+          <Route path="/client/:clientId" element={<Client />} />
+          <Route path="/customer/:customerId" element={<Customer />} />
+          <Route path="/client/:clientId/favorited" element={<ClientFav />} />
+          <Route path="/client/:clientId/orders" element={<Orders />} />
+          <Route path="/customer/:customerId/orders" element={<Orders />} />
+          <Route path="/client/:clientId/item/:itemId" element={<FullCardItem />} />
+          <Route path="/customer/:customerId/item/:itemId" element={<FullCardItem />} />
+          <Route path="/client/:clientId/order/:itemId" element={<FullOrderItem />} />
+          <Route path="/customer/:customerId/order/:orderId" element={<FullOrderItem />} />
+          <Route path="/customer/:customerId/item/:itemId/edit" element={<FullCardEdit />} />
           {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
         </Route>

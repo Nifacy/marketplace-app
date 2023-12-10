@@ -3,9 +3,11 @@ import styles from "./styles.module.css";
 import { Navigation } from "../../App";
 
 import { Link } from "react-router-dom";
+import { tokenManager } from "../../api";
 
 export const Nav = () => {
-  const { isClient, clientId, customerId } = useContext(Navigation);
+  const { clientId, customerId } = useContext(Navigation);
+  const isClient = tokenManager.getToken().type === "customer";
 
   const path = isClient ? `/client/${clientId}` : `/customer/${customerId}`;
   const pathFav = `/client/${clientId}/favorited`;

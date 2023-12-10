@@ -67,6 +67,29 @@ export async function getProducts(name?: string): Promise<types.Product[]> {
 }
 
 
+export async function getProduct(productId: number): Promise<types.Product> {
+  console.log(`[api] called getProduct(${productId})`);
+  checkUserType();
+
+  let products: types.Product[] = await storage.get("db-products") || [];
+
+  for (let product of products) {
+    if (product.id === productId) {
+      if (currentToken?.type === "customer") {
+        const favoriteIds = (await getFavorites()).map(product => product.id);
+        product.in_favorites = favoriteIds.includes(product.id);
+      }
+
+      console.log("[api] found product:")
+      console.log(product);
+      return product;
+    }
+  }
+
+  throw new exceptions.NotFound();
+}
+
+
 export async function addToFavorites(productId: number): Promise<types.Product> {
   console.log(`[api] called addToFavorites(${productId})`);
 
@@ -101,7 +124,7 @@ export async function addToFavorites(productId: number): Promise<types.Product> 
 
 
 export async function removeFromFavorites(productId: number): Promise<types.Product> {
-  console.log(`[api] called addToFavorites(${productId})`);
+  console.log(`[api] called removeFromFavorites(${productId})`);
 
   if (currentToken === null) throw new exceptions.Unauthorized();
   checkUserType("customer");
@@ -158,6 +181,8 @@ export async function getFavorites(): Promise<types.Product[]> {
     }
   }
 
+  console.log("Found favorites:")
+  console.log(favoriteProducts);
   return favoriteProducts;
 }
 
@@ -199,4 +224,68 @@ export async function getOrders(): Promise<types.Order[]> {
   console.log("[api] found orders:")
   console.log(foundOrders);
   return foundOrders;
+}
+
+
+export async function getOrder(orderId: number): Promise<types.Order> {
+  console.log(`[api] called getOrder(${orderId})`);
+
+  if (currentToken === null) throw new exceptions.Unauthorized();
+  let products = await storage.get("db-products") || [];
+  let orders = await storage.get("db-orders") || [];
+  let customers = await storage.get("db-customer") || [];
+
+  for (let order of orders) {
+    if (order.id === orderId) {
+      const product = products.find(product => product.id === order.productId);
+      const customer = customers.find(customer => customer.id === order.customerId);
+      
+      const fullOrder = {
+        id: order.id,
+        status: order.status,
+        cancel_description: order.cancel_description,
+        price: order.price,
+        creation_datetime: order.creation_datetime,
+        product: product,
+        target_address: order.target_address,
+        customer: customer,
+      };
+
+      console.log("[api] found order:")
+      console.log(fullOrder);
+      return fullOrder;
+    }
+  }
+
+  throw new exceptions.NotFound();
+}
+
+
+export async function createOrder(productId: number): Promise<types.Order> {
+  console.log(`[api] called createOrder()`);
+
+  if (currentToken === null) throw new exceptions.Unauthorized();
+  checkUserType("customer");
+  
+  const customer = await getUser() as types.Customer;
+  const orders = await storage.get("db-orders") || [];
+  const product = await getProduct(productId);
+
+  const order = {
+    id: orders.length,
+    status: "created",
+    cancel_description: null,
+    price: product.info.price,
+    creation_datetime: (new Date()).toLocaleTimeString(),
+    product: productId,
+    target_address: customer.info.address,
+    customer: customer.id,
+  };
+
+  await storage.save("db-orders", [...orders, order]);
+
+  console.log("[api] created order:")
+  console.log(order);
+
+  return await getOrder(order.id);
 }

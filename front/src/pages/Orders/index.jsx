@@ -10,22 +10,7 @@ import { api } from "../../api";
 export const Orders = () => {
   const { customerId, clientId } = useContext(Navigation);
 
-  const [items, setItems] = useState([
-    {
-      url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
-      order: "qweqweqwe",
-      description: "fhhfhfhfhfh", // !!!
-      price: 123,
-      // В ORDERITEM ПЕРЕДАЕТСЯ ID, важно!
-    },
-    {
-      url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
-      order: "qweqweqwe",
-      description: "fhhfhfhfhfh", // !!!
-      price: 123,
-      // В ORDERITEM ПЕРЕДАЕТСЯ ID, важно!
-    },
-  ]);
+  const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -36,6 +21,7 @@ export const Orders = () => {
 
         for (const order of await api.getOrders()) {
           items.push({
+            id: order.id,
             url: order.product.info.images[0],
             order: `Заказ №${order.id}`,
             description: `Доставка продавцом ${order.product.supplier.info.name}`,
@@ -59,7 +45,7 @@ export const Orders = () => {
       <div className={styles.main}>
         <div className={styles.items}>
           {items.map((item, index) => {
-            return <OrderItem {...item} key={index} isLoading={isLoading} />;
+            return <OrderItem {...item} isLoading={isLoading} />;
           })}
         </div>
       </div>

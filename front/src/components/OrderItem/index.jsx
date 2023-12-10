@@ -1,15 +1,16 @@
 import React, { useContext } from "react";
 import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
-import { Navigation } from "../../App";
+import { useParams } from "react-router-dom";
+
+import { api, tokenManager } from "../../api";
 
 export const OrderItem = (props) => {
-  const { isClient, clientId, customerId, orderId, setOrderId } = useContext(Navigation);
-
   const { id, order, price, description, url } = props;
+  const isClient = tokenManager.getToken().type === "customer";
+  const userId = tokenManager.getToken().id;
 
-  setOrderId(id);
-  const itemPath = isClient ? `/client/${clientId}/order/${orderId}` : `/customer/${customerId}/order/${orderId}`;
+  const itemPath = isClient ? `/client/${userId}/order/${id}` : `/customer/${userId}/order/${id}`;
 
   return (
     <div className={styles.card}>
