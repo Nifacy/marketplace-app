@@ -1,11 +1,13 @@
 import * as exceptions from "../exceptions"
+import * as types from "../types.ts"
+import * as storage from "./storage.js"
 
 
-export async function registerCustomer(registerForm) {
+export async function registerCustomer(registerForm: types.CustomerRegisterForm): Promise<types.Token> {
   console.log("[api] Called registerCustomer()");
   console.log("registerForm:", registerForm);
 
-  const customers = JSON.parse(localStorage.getItem("db.customer") || "[]");
+  const customers = await storage.get("db-customer") || [];
 
   for (let supplier of customers) {
     if (supplier.credentials.login === registerForm.credentials.login) {
@@ -21,20 +23,21 @@ export async function registerCustomer(registerForm) {
     id: customers.length,
     credentials: registerForm.credentials,
     info: registerForm.info,
+    favorites: [],
   });
 
-  localStorage.setItem("db.customer", JSON.stringify(customers));
+  await storage.save("db-customer", customers);
   
-  const token = {token: (customers.length - 1).toString()};
+  const token: types.Token = {token: (customers.length - 1).toString()};
   return token;
 }
 
 
-export async function authCustomer(credentials) {
+export async function authCustomer(credentials: types.CustomerCredentials): Promise<types.Token> {
   console.log("[api] Called authCustomer()");
   console.log("credentials:", credentials);
 
-  const customers = JSON.parse(localStorage.getItem("db.customer") || "[]");
+  const customers = await storage.get("db-customer") || [];
 
   if (credentials.password.length < 5) {
     throw new exceptions.RequestFailed(null);
@@ -54,11 +57,11 @@ export async function authCustomer(credentials) {
 }
 
 
-export async function registerSupplier(registerForm) {
+export async function registerSupplier(registerForm: types.SupplierRegisterForm): Promise<types.Token> {
   console.log("[api] Called registerSupplier()");
   console.log("registerForm:", registerForm);
 
-  const suppliers = JSON.parse(localStorage.getItem("db.supplier") || "[]");
+  const suppliers = await storage.get("db-supplier") || [];
 
   for (let supplier of suppliers) {
     if (supplier.credentials.login === registerForm.credentials.login) {
@@ -76,18 +79,18 @@ export async function registerSupplier(registerForm) {
     info: registerForm.info,
   });
 
-  localStorage.setItem("db.supplier", JSON.stringify(suppliers));
+  await storage.save("db-supplier", suppliers);
   
-  const token = {token: (suppliers.length - 1).toString()};
+  const token: types.Token = {token: (suppliers.length - 1).toString()};
   return token;
 }
 
 
-export async function authSupplier(credentials) {
+export async function authSupplier(credentials: types.SupplierCredentials): Promise<types.Token> {
   console.log("[api] Called authSupplier()");
   console.log("credentials:", credentials);
 
-  const suppliers = JSON.parse(localStorage.getItem("db.supplier") || "[]");
+  const suppliers = await storage.get("db-supplier") || [];
 
   if (credentials.password.length < 5) {
     throw new exceptions.RequestFailed(null);
