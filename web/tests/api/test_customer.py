@@ -45,7 +45,6 @@ async def test_get_current_customer(test_client):
     headers = {"Authorization": f"Bearer {token.token}"}
     response = test_client.get("/customer/me", headers=headers)
 
-    print(response.json())
     assert response.status_code == 200
     customer = schemas.Customer.model_validate(response.json())
     assert customer.info == register_form.info

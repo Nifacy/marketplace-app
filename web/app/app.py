@@ -142,7 +142,7 @@ async def get_customer_endpoint(conn: DependsDBConnection, id: int):
 
 
 @app.get("/product")
-async def get_products(conn: DependsDBConnection, user: DependsAuth, name: str | None = None) -> list[schemas.Product]:
+async def get_products(user: DependsAuth, conn: DependsDBConnection,  name: str | None = None) -> list[schemas.Product]:
     _products = product.get_products(conn, product.SearchFilters(name=name))
     
     if isinstance(user, schemas.Customer):
@@ -158,7 +158,7 @@ async def get_products(conn: DependsDBConnection, user: DependsAuth, name: str |
 
 
 @app.get("/product/{id}", response_model=schemas.Product)
-async def get_product_by_id(conn: DependsDBConnection, user: DependsAuth, id: int):
+async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: int):
     _products = product.get_products(conn, product.SearchFilters(product_id=id))
 
     if len(_products) == 0:
