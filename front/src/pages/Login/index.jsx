@@ -6,6 +6,9 @@ import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { Navigation } from "../../App";
 
+import * as tokenManager from "../../tokenManager";
+import * as api from "../../api";
+
 export const Login = () => {
   const { isClient, setClientId, setCustomerId } = useContext(Navigation);
   const navigate = useNavigate();
@@ -24,25 +27,26 @@ export const Login = () => {
   };
 
   async function handleEnter() {
+    setIsLoading(true);
+
+    const credentials = {
+      login: login,
+      password: password,
+    };
+
     try {
       setIsLoading(true);
-
-      const userResponse = await fetch(`http://localhost:3000/client/${login}/${password}`).then((response) =>
-        response.json()
-      );
-      // если запросы на получение клиента и продавца разные, используем конструкцию {isClient ? `...` : `...`}
-
-      if (userResponse) {
-        const path = isClient ? `/client/${userResponse.id}` : `/customer/${userResponse.id}`;
-        if (isClient) {
-          setClientId(userResponse.id);
-        } else {
-          setCustomerId(userResponse.id);
-        }
-        navigate(path);
+      const response = await api.auth.authCustomer(credentials);
+      tokenManager.saveToken(isClient ? "customer" : "supplier", response.token);
+      navigate("/login"); // TODO: move to home page when authorised
+    } catch(error) {
+      if (error instanceof api.exception.InvalidCredentials) {
+        setIsError(true);
+      } else if (error instanceof api.exception.RequestFailed) {
+        setIsError(true);
+      } else {
+        throw error;
       }
-    } catch (error) {
-      setIsError(true);
     } finally {
       setIsLoading(false);
     }
