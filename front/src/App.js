@@ -10,11 +10,12 @@ import { Client } from "./pages/Client/index";
 import { ClientFav } from "./pages/ClientFav";
 import { Orders } from "./pages/Orders";
 import { FullCardItem } from "./pages/FullCardItem";
+import { FullCardEdit } from "./pages/FullCardEdit";
 
 export const Navigation = createContext(null);
 
 function App() {
-  const [isClient, setIsClient] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const [clientId, setClientId] = useState();
   const [customerId, setCustomerId] = useState();
   const [itemId, setItemId] = useState();
@@ -42,7 +43,9 @@ function App() {
           <Route path="/client/:id/favorited" element={<ClientFav />} />
           <Route path="/client/:id/orders" element={<Orders />} />
           <Route path="/client/:id/item/:id" element={<FullCardItem />} />
-          <Route path="/customer/:id/item/:id/edit" element={<FullCardItem />} />
+          <Route path="/customer/:id/item/:id" element={<FullCardEdit />} />
+          {/* FullCardItem */}
+          <Route path="/customer/:id/item/:itemId/edit" element={<FullCardEdit />} />
           {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
