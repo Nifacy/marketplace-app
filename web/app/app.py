@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException
 import psycopg2.extensions
 
 from . import database, schemas
-from .usecases import customer, oauth2, supplier
+from .usecases import customer, oauth2, supplier, product, favorites
 from .dependencies import database, get_current_user
 
 
@@ -14,6 +14,11 @@ DependsDBConnection = Annotated[
     Depends(database.get_connection),
 ]
 
+
+DependsAuth = Annotated[
+    schemas.Customer | schemas.Supplier,
+    Depends(get_current_user),
+]
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -114,3 +119,37 @@ async def get_customer_endpoint(
         return customer.get_customer(conn, id)
     except customer.CustomerNotFound:
         raise HTTPException(status_code=404, detail="Customer not found")
+
+@app.get("/product")
+async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str | None = None) -> list[schemas.Product]:
+    _products = product.get_products(conn, product.SearchFilters(name=name))
+    
+    if isinstance(user, schemas.Customer):
+        favorite_products = favorites.get_favorites(conn, user.id)
+        favorite_ids = set(p.id for p in favorite_products)
+    else:
+        favorite_ids = set()
+    
+    for p in _products:
+        p.in_favorites = p.id in favorite_ids
+    
+    return _products
+
+
+@app.get("/product/{id}", response_model=schemas.Product)
+async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: int):
+    _products = product.get_products(conn, product.SearchFilters(product_id=id))
+
+    if len(_products) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Product not found",
+        )
+
+    _product = _products[0]
+
+    if isinstance(user, schemas.Customer):
+        _product.in_favorites = _product.id in favorites.get_favorites(conn, user.id)
+    
+    return _products[0]
+
