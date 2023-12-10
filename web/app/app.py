@@ -20,6 +20,7 @@ DependsAuth = Annotated[
     Depends(get_current_user),
 ]
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     database.open_connection()
@@ -42,15 +43,20 @@ async def get_supplier_endpoint(conn: DependsDBConnection, supplier_id: int):
 
 @app.post("/supplier/register", response_model=schemas.Token)
 async def register_supplier(conn: DependsDBConnection, register_form: schemas.SupplierRegisterForm):
-    _supplier = supplier.register_supplier(conn, register_form)
-    return schemas.Token(
-        token=oauth2.generate_token(
-            oauth2.TokenData(
-                type="supplier",
-                id=_supplier.id,
+    try:
+        _supplier = supplier.register_supplier(conn, register_form)
+
+        return schemas.Token(
+            token=oauth2.generate_token(
+                oauth2.TokenData(
+                    type="supplier",
+                    id=_supplier.id,
+                ),
             ),
-        ),
-    )
+        )
+    
+    except supplier.SupplierAlreadyExists:
+        raise HTTPException(status_code=409, detail="Supplier already exists")
 
 
 @app.post("/supplier/login", response_model=schemas.Token)
@@ -76,15 +82,20 @@ async def login_supplier(conn: DependsDBConnection, credentials: schemas.Supplie
 
 @app.post("/customer/register", response_model=schemas.Token)
 async def register_customer(conn: DependsDBConnection, register_form: schemas.CustomerRegisterForm):
-    _customer = customer.register_customer(conn, register_form)
-    return schemas.Token(
-        token=oauth2.generate_token(
-            oauth2.TokenData(
-                type="customer",
-                id=_customer.id,
+    try:
+        _customer = customer.register_customer(conn, register_form)
+        
+        return schemas.Token(
+            token=oauth2.generate_token(
+                oauth2.TokenData(
+                    type="customer",
+                    id=_customer.id,
+                ),
             ),
-        ),
-    )
+        )
+    
+    except customer.CustomerAlreadyExists:
+        raise HTTPException(status_code=409, detail="Customer already exists")
 
 
 @app.post("/customer/login", response_model=schemas.Token)
