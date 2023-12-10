@@ -104,6 +104,8 @@ export const ClientReg = () => {
       } else if (error instanceof api.exception.RequestFailed) {
         setErrorDescription("Неверный формат данных");
         setIsError(true);
+      } else {
+        throw error;
       }
     } finally {
       setIsLoading(false);
