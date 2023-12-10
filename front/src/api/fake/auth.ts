@@ -23,12 +23,16 @@ export async function registerCustomer(registerForm: types.CustomerRegisterForm)
     id: customers.length,
     credentials: registerForm.credentials,
     info: registerForm.info,
-    favorites: [],
   });
 
   await storage.save("db-customer", customers);
   
-  const token: types.Token = {token: (customers.length - 1).toString()};
+  const token: types.Token = {
+    token: JSON.stringify({
+      type: "customer",
+      id: customers.length - 1,
+    })
+  };
   return token;
 }
 
@@ -49,7 +53,7 @@ export async function authCustomer(credentials: types.CustomerCredentials): Prom
         throw new exceptions.InvalidCredentials(credentials);
       }
 
-      return {token: customer.id};
+      return {token: JSON.stringify({type: "customer", id: customer.id})};
     }
   }
 
@@ -81,7 +85,12 @@ export async function registerSupplier(registerForm: types.SupplierRegisterForm)
 
   await storage.save("db-supplier", suppliers);
   
-  const token: types.Token = {token: (suppliers.length - 1).toString()};
+  const token: types.Token = {
+    token: JSON.stringify({
+      type: "customer",
+      id: suppliers.length - 1,
+    })
+  };
   return token;
 }
 
@@ -102,7 +111,7 @@ export async function authSupplier(credentials: types.SupplierCredentials): Prom
         throw new exceptions.InvalidCredentials(credentials);
       }
 
-      return {token: supplier.id.toString()};
+      return {token: JSON.stringify({type: "supplier", id: supplier.id})};
     }
   }
 
