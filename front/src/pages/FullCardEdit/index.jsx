@@ -16,7 +16,7 @@ export const FullCardEdit = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState();
 
-  const [showModalAddImg, setShowModalAddImg] = useState(true);
+  const [showModalAddImg, setShowModalAddImg] = useState(false);
 
   const [item, setItem] = useState({
     urls: [

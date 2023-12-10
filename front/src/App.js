@@ -11,6 +11,7 @@ import { ClientFav } from "./pages/ClientFav";
 import { Orders } from "./pages/Orders";
 import { FullCardItem } from "./pages/FullCardItem";
 import { FullCardEdit } from "./pages/FullCardEdit";
+import { Customer } from "./pages/Customer";
 
 export const Navigation = createContext(null);
 
@@ -40,12 +41,14 @@ function App() {
           <Route path="/client/registration" element={<ClientReg />} />
           <Route path="/customer/registration" element={<CustomerReg />} />
           <Route path="/client/:id" element={<Client />} />
+          <Route path="/customer/:id" element={<Customer />} />
           <Route path="/client/:id/favorited" element={<ClientFav />} />
           <Route path="/client/:id/orders" element={<Orders />} />
+          <Route path="/customer/:id/orders" element={<Orders />} />
           <Route path="/client/:id/item/:id" element={<FullCardItem />} />
-          <Route path="/customer/:id/item/:id" element={<FullCardEdit />} />
+          <Route path="/customer/:id/item/:id" element={<FullCardItem />} />
           {/* FullCardItem */}
-          <Route path="/customer/:id/item/:itemId/edit" element={<FullCardEdit />} />
+          <Route path="/customer/:id/item/:id/edit" element={<FullCardEdit />} />
           {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
