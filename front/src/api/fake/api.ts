@@ -160,3 +160,43 @@ export async function getFavorites(): Promise<types.Product[]> {
 
   return favoriteProducts;
 }
+
+
+export async function getOrders(): Promise<types.Order[]> {
+  console.log(`[api] called getOrders()`);
+  console.log("[api] currentToken: ", currentToken);
+
+  if (currentToken === null) throw new exceptions.Unauthorized();
+  let products = await storage.get("db-products") || [];
+  let orders = await storage.get("db-orders") || [];
+  let customers = await storage.get("db-customer") || [];
+  let foundOrders: types.Order[] = [];
+
+  for (let order of orders) {
+    const product = products.find(product => product.id === order.productId);
+    const customer = customers.find(customer => customer.id === order.customerId);
+    
+    const fullOrder = {
+      id: order.id,
+      status: order.status,
+      cancel_description: order.cancel_description,
+      price: order.price,
+      creation_datetime: order.creation_datetime,
+      product: product,
+      target_address: order.target_address,
+      customer: customer,
+    };
+
+    if (currentToken.type === "supplier") {
+      if (product?.supplier.id === currentToken.id) {
+        foundOrders.push(fullOrder);
+      }
+    } else if (customer?.id === currentToken.id) {
+      foundOrders.push(fullOrder);
+    }
+  }
+
+  console.log("[api] found orders:")
+  console.log(foundOrders);
+  return foundOrders;
+}

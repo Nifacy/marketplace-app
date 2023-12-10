@@ -4,6 +4,8 @@ import styles from "./styles.module.css";
 import { Nav } from "../../components/Nav";
 import { OrderItem } from "../../components/OrderItem";
 
+import { api } from "../../api";
+
 export const Orders = () => {
   const [items, setItems] = useState([
     {
@@ -25,7 +27,17 @@ export const Orders = () => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const items = await fetch(`http://localhost:3000/orders`).then((res) => res.json()); // заказы
+        let items = [];
+
+        for (const order of await api.getOrders()) {
+          items.push({
+            url: order.product.info.images[0],
+            order: `Заказ №${order.id}`,
+            description: `Доставка продавцом ${order.product.supplier.info.name}`,
+            price: order.price,
+          });
+        }
+
         setItems(items);
       } catch (error) {
         console.log(error);
