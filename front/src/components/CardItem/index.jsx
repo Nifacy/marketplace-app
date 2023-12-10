@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ContentLoader from "react-content-loader";
 import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
+import { Navigation } from "../../App";
 
 import { api } from "../../api";
 
 export const CardItem = (props) => {
-  const { productId, name, price, url, isLoading = false, initialFav = false } = props;
+  const { isClient, itemId, setItemId, clientId, customerId } = useContext(Navigation);
+  const { id, productId, name, price, url, isLoading = false, initialFav = false } = props;
   const [fav, setFav] = useState(initialFav);
+  
+  setItemId(id);
+  const itemPath = isClient ? `/client/${clientId}/item/${itemId}` : `/customer/${customerId}/item/${itemId}`;
 
   useEffect(() => {
     setFav(initialFav);
@@ -46,7 +52,9 @@ export const CardItem = (props) => {
       ) : (
         <>
           <div className={styles.card}>
-            <img alt="1" src={url} />
+            <Link to={itemPath}>
+              <img alt="1" src={url} />
+            </Link>
             <div className={styles.info}>
               <div>
                 <h5>{name}</h5>

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./styles.module.css";
+import { Navigation } from "../../App";
 
 import { Nav } from "../../components/Nav";
 import { OrderItem } from "../../components/OrderItem";
@@ -7,18 +8,22 @@ import { OrderItem } from "../../components/OrderItem";
 import { api } from "../../api";
 
 export const Orders = () => {
+  const { customerId, clientId } = useContext(Navigation);
+
   const [items, setItems] = useState([
     {
       url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
       order: "qweqweqwe",
       description: "fhhfhfhfhfh", // !!!
       price: 123,
+      // В ORDERITEM ПЕРЕДАЕТСЯ ID, важно!
     },
     {
       url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
       order: "qweqweqwe",
       description: "fhhfhfhfhfh", // !!!
       price: 123,
+      // В ORDERITEM ПЕРЕДАЕТСЯ ID, важно!
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);

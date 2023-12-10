@@ -9,14 +9,19 @@ import { CustomerReg } from "./pages/CustomerReg";
 import { Client } from "./pages/Client/index";
 import { ClientFav } from "./pages/ClientFav";
 import { Orders } from "./pages/Orders";
+import { FullCardItem } from "./pages/FullCardItem";
+import { FullCardEdit } from "./pages/FullCardEdit";
+import { Customer } from "./pages/Customer";
+import { FullOrderItem } from "./pages/FullOrderItem";
 
 export const Navigation = createContext(null);
 
 function App() {
-  const [isClient, setIsClient] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const [clientId, setClientId] = useState();
   const [customerId, setCustomerId] = useState();
   const [itemId, setItemId] = useState();
+  const [orderId, setOrderId] = useState();
 
   return (
     <Navigation.Provider
@@ -29,6 +34,8 @@ function App() {
         setCustomerId,
         itemId,
         setItemId,
+        orderId,
+        setOrderId,
       }}
     >
       <Routes>
@@ -38,8 +45,16 @@ function App() {
           <Route path="/client/registration" element={<ClientReg />} />
           <Route path="/customer/registration" element={<CustomerReg />} />
           <Route path="/client/:id" element={<Client />} />
+          <Route path="/customer/:id" element={<Customer />} />
           <Route path="/client/:id/favorited" element={<ClientFav />} />
           <Route path="/client/:id/orders" element={<Orders />} />
+          <Route path="/customer/:id/orders" element={<Orders />} />
+          <Route path="/client/:id/item/:id" element={<FullCardItem />} />
+          <Route path="/customer/:id/item/:id" element={<FullCardItem />} />
+          <Route path="/client/:id/order/:id" element={<FullOrderItem />} />
+          <Route path="/customer/:id/order/:id" element={<FullOrderItem />} />
+          <Route path="/customer/:id/item/:id/edit" element={<FullCardEdit />} />
+          {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
       </Routes>
