@@ -11,3 +11,10 @@ export class RequestFailed extends Error {
     this.name = "RequestFailed";
   }
 }
+
+export class InvalidCredentials extends Error {
+  constructor(credentials) {
+    super("Invalid credentials");
+    this.credentials = credentials;
+  }
+}
