@@ -31,6 +31,13 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+@app.get("/supplier/me", response_model=schemas.Supplier)
+async def get_current_supplier(user: DependsAuth):
+    if not isinstance(user, schemas.Supplier):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return user
+
+
 @app.get("/suppliers/{supplier_id}", response_model=schemas.Supplier)
 async def get_supplier_endpoint(conn: DependsDBConnection, supplier_id: int):
     _supplier = supplier.get_supplier(conn, supplier_id)
@@ -118,21 +125,24 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             detail="Wrong login or password",
         )
 
-# TODO: add
-# user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
-# to the list of arguments
+
+@app.get("/customer/me", response_model=schemas.Customer)
+async def get_current_customer(user: DependsAuth):
+    if not isinstance(user, schemas.Customer):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return user
+
+
 @app.get("/customer/{id}", response_model=schemas.Customer)
-async def get_customer_endpoint(
-    conn: DependsDBConnection, 
-    id: int
-    ):
+async def get_customer_endpoint(conn: DependsDBConnection, id: int):
     try:
         return customer.get_customer(conn, id)
     except customer.CustomerNotFound:
         raise HTTPException(status_code=404, detail="Customer not found")
 
+
 @app.get("/product")
-async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str | None = None) -> list[schemas.Product]:
+async def get_products(conn: DependsDBConnection, user: DependsAuth, name: str | None = None) -> list[schemas.Product]:
     _products = product.get_products(conn, product.SearchFilters(name=name))
     
     if isinstance(user, schemas.Customer):
@@ -148,7 +158,7 @@ async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str |
 
 
 @app.get("/product/{id}", response_model=schemas.Product)
-async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: int):
+async def get_product_by_id(conn: DependsDBConnection, user: DependsAuth, id: int):
     _products = product.get_products(conn, product.SearchFilters(product_id=id))
 
     if len(_products) == 0:
@@ -163,4 +173,3 @@ async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: in
         _product.in_favorites = _product.id in favorites.get_favorites(conn, user.id)
     
     return _products[0]
-
