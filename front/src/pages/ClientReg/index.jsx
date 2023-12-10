@@ -5,11 +5,15 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
+import * as api from "../../api";
+import * as tokenManager from "../../tokenManager";
+
 export const ClientReg = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -64,28 +68,43 @@ export const ClientReg = () => {
   };
 
   async function handleEnter() {
+    const registerData = {
+      credentials: {
+        login: login,
+        password: password,
+      },
+      info: {
+        first_name: name,
+        last_name: surname,
+        contacts: {
+          phone: phone,
+          email: email,
+        },
+        address: {
+          street: street,
+          city: city,
+          country: сountry,
+          postal_code: "12345",
+          house: parseInt(house),
+          entrance: parseInt(apartment),
+          appartment: parseInt(building),
+        },
+      },
+    };
+
     try {
       setIsLoading(true);
-
-      const data = {
-        // ваш объект данных (ключ - значение)
-      };
-
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      };
-
-      const response = await fetch(`http://localhost:3000/client/registration`, requestOptions).then((response) =>
-        response.json()
-      );
-
-      if (response) {
-        navigate("/login");
+      const response = await api.auth.registerCustomer(registerData);
+      tokenManager.saveToken("customer", response.token);
+      navigate("/login"); // TODO: move to home page when authorised
+    } catch(error) {
+      if (error instanceof api.exception.AlreadyExists) {
+        setErrorDescription("Пользователь с данным логином уже существует");
+        setIsError(true);
+      } else if (error instanceof api.exception.RequestFailed) {
+        setErrorDescription("Неверный формат данных");
+        setIsError(true);
       }
-    } catch (error) {
-      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +139,7 @@ export const ClientReg = () => {
         Зарегестрироваться
       </Button>
       <p style={{ color: "red", opacity: isError ? 1 : 0 }}>
-        Некорректные данные в форме <br />
+        {errorDescription} <br />
       </p>
       <p style={{ opacity: isLoading ? 1 : 0 }}>Загрузка</p>
     </div>
