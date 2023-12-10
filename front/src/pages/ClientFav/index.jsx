@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 
-// import { useNavigate } from "react-router-dom";
 import { Nav } from "../../components/Nav";
 import { CardItem } from "../../components/CardItem";
-import { Input } from "../../components/Input";
 
-export const Client = () => {
-  //   const navigate = useNavigate();
+export const ClientFav = () => {
   const [items, setItems] = useState([
     {
       url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
@@ -16,17 +13,12 @@ export const Client = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-
-  const handleOnChangeSearch = (event) => {
-    setSearchValue(event.target.value);
-  };
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const items = await fetch(`http://localhost:3000/ALLitems`).then((res) => res.json()); // id, name, price
+        const items = await fetch(`http://localhost:3000/favoriteItems`).then((res) => res.json());
         setItems(items);
       } catch (error) {
         console.log(error);
@@ -35,12 +27,10 @@ export const Client = () => {
       }
     }
     fetchData();
-  }, []);
+  }, []); // возможно нужны зависимости для ререндера
 
   const renderItems = () => {
-    return (
-      isLoading ? [...Array(8)] : items.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))
-    ).map((item, index) => {
+    return (isLoading ? [...Array(8)] : items).map((item, index) => {
       return <CardItem {...item} key={index} isLoading={isLoading} />;
     });
   };
@@ -49,7 +39,6 @@ export const Client = () => {
     <div className={styles.container}>
       <Nav />
       <div className={styles.main}>
-        <Input placeholder="Поиск" value={searchValue} onChange={handleOnChangeSearch} />
         <div className={styles.items}>{renderItems()}</div>
       </div>
     </div>

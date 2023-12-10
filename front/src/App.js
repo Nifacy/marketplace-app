@@ -7,11 +7,12 @@ import { Login } from "./pages/Login";
 import { ClientReg } from "./pages/ClientReg";
 import { CustomerReg } from "./pages/CustomerReg";
 import { Client } from "./pages/Client/index";
+import { ClientFav } from "./pages/ClientFav";
 
 export const Navigation = createContext(null);
 
 function App() {
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
   const [clientId, setClientId] = useState();
   const [customerId, setCustomerId] = useState();
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/client/registration" element={<ClientReg />} />
           <Route path="/customer/registration" element={<CustomerReg />} />
           <Route path="/client/:id" element={<Client />} />
+          <Route path="/client/:id/favorited" element={<ClientFav />} />
           {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
       </Routes>
