@@ -107,6 +107,18 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             detail="Wrong login or password",
         )
 
+# TODO: add
+# user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
+# to the list of arguments
+@app.get("/customer/{id}", response_model=schemas.Customer)
+async def get_customer_endpoint(
+    conn: DependsDBConnection, 
+    id: int
+    ):
+    try:
+        return customer.get_customer(conn, id)
+    except customer.CustomerNotFound:
+        raise HTTPException(status_code=404, detail="Customer not found")
 
 @app.get("/product")
 async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str | None = None) -> list[schemas.Product]:
@@ -140,3 +152,4 @@ async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: in
         _product.in_favorites = _product.id in favorites.get_favorites(conn, user.id)
     
     return _products[0]
+
