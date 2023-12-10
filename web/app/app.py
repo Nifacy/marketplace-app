@@ -5,13 +5,19 @@ from fastapi import Depends, FastAPI, HTTPException
 import psycopg2.extensions
 
 from . import database, schemas
-from .usecases import customer, oauth2, supplier
+from .usecases import customer, oauth2, supplier, product, favorites
 from .dependencies import database, get_current_user
 
 
 DependsDBConnection = Annotated[
     psycopg2.extensions.connection,
     Depends(database.get_connection),
+]
+
+
+DependsAuth = Annotated[
+    schemas.Customer | schemas.Supplier,
+    Depends(get_current_user),
 ]
 
 
