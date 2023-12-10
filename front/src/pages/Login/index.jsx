@@ -36,7 +36,8 @@ export const Login = () => {
 
     try {
       setIsLoading(true);
-      const response = await api.auth.authCustomer(credentials);
+      const authFunc = isClient ? api.auth.authCustomer : api.auth.authSupplier;
+      const response = await authFunc(credentials);
       tokenManager.saveToken(isClient ? "customer" : "supplier", response.token);
       navigate("/login"); // TODO: move to home page when authorised
     } catch(error) {

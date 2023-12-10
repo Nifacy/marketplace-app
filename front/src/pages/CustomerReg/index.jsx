@@ -5,11 +5,18 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
+import * as api from "../../api"
+import * as tokenManager from "../../tokenManager"
+
 export const CustomerReg = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,30 +60,53 @@ export const CustomerReg = () => {
   const handleOnChangeBuilding = (event) => {
     setBuilding(event.target.value);
   };
+  const handleOnChangeLogin = (event) => {
+    setLogin(event.target.value);
+  }
+  const handleOnChangePassword = (event) => {
+    setPassword(event.target.value);
+  }
 
   async function handleEnter() {
+    const registerData = {
+      credentials: {
+        login: login,
+        password: password,
+      },
+      info: {
+        name: name,
+        contacts: {
+          phone: phone,
+          email: email,
+          telegram: telegram,
+        },
+        address: {
+          street: street,
+          city: city,
+          country: сountry,
+          postal_code: "12345", 
+          house: parseInt(house),
+          entrance: parseInt(apartment),
+          appartment: parseInt(building),
+        },
+      },
+    };
+
     try {
       setIsLoading(true);
-
-      const data = {
-        // ваш объект данных (ключ - значение)
-      };
-
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      };
-
-      const response = await fetch(`http://localhost:3000/customer/registration`, requestOptions).then((response) =>
-        response.json()
-      );
-
-      if (response) {
-        navigate("/login");
+      const response = await api.auth.registerSupplier(registerData);
+      tokenManager.saveToken("supplier", response.token);
+      navigate("/login"); // TODO: move to home page when authorised
+    } catch(error) {
+      if (error instanceof api.exception.AlreadyExists) {
+        setErrorDescription("Пользователь с данным логином уже существует");
+        setIsError(true);
+      } else if (error instanceof api.exception.RequestFailed) {
+        setErrorDescription("Неверный формат данных");
+        setIsError(true);
+      } else {
+        throw error;
       }
-    } catch (error) {
-      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -85,6 +115,11 @@ export const CustomerReg = () => {
   return (
     <div className={styles.main}>
       <h3>Welcome first</h3>
+      <h4>Данные для входа:</h4>
+      <div className={styles.personal}>
+        <Input value={login} onChange={handleOnChangeLogin} placeholder="Логин" type="text" />
+        <Input value={password} onChange={handleOnChangePassword} placeholder="Пароль" type="password" />
+      </div>
       <h4>Личные данные:</h4>
       <div className={styles.personal}>
         <Input value={name} onChange={handleOnChangeName} placeholder="Название компании" type="text" />
@@ -106,7 +141,7 @@ export const CustomerReg = () => {
         Зарегестрироваться
       </Button>
       <p style={{ color: "red", opacity: isError ? 1 : 0 }}>
-        Некорректные данные в форме <br />
+       { errorDescription } <br />
       </p>
       <p style={{ opacity: isLoading ? 1 : 0 }}>Загрузка</p>
     </div>
