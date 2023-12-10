@@ -47,3 +47,16 @@ def test_successful_login(test_client):
 
     assert response.status_code == 200
     assert "token" in response.json()
+
+
+@pytest.mark.asyncio
+async def test_register_customer_already_exists(test_client):
+    register_form = utils.create_customer_register_form()
+
+    response = test_client.post("/customer/register", json=register_form.model_dump())
+    assert response.status_code == 200
+
+    response = test_client.post("/customer/register", json=register_form.model_dump())
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Customer already exists"}

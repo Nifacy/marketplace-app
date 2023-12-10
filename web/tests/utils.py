@@ -14,7 +14,7 @@ def _generate_password(length: int = 10):
     digit = random.choice(string.digits)
     special_char = random.choice(string.punctuation)
 
-    remaining_chars = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for _ in range(length))
+    remaining_chars = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for _ in range(length - 3))
     password = letter + digit + special_char + remaining_chars
     password = ''.join(random.sample(password, len(password)))
 
