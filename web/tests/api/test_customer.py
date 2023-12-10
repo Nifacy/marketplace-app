@@ -34,3 +34,18 @@ async def test_get_customer_invalid_data_format(test_client):
     assert response.status_code == 422
     assert "detail" in response.json()
 
+
+@pytest.mark.asyncio
+async def test_get_current_customer(test_client):
+    register_form = utils.create_customer_register_form()
+    response = test_client.post("/customer/register", json=register_form.model_dump())
+    assert response.status_code == 200
+    token = schemas.Token.model_validate(response.json())
+
+    headers = {"Authorization": f"Bearer {token.token}"}
+    response = test_client.get("/customer/me", headers=headers)
+
+    print(response.json())
+    assert response.status_code == 200
+    customer = schemas.Customer.model_validate(response.json())
+    assert customer.info == register_form.info
