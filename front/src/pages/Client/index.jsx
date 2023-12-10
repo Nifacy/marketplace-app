@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 
-// import { useNavigate } from "react-router-dom";
 import { Nav } from "../../components/Nav";
 import { CardItem } from "../../components/CardItem";
 import { Input } from "../../components/Input";
 
 export const Client = () => {
-  //   const navigate = useNavigate();
   const [items, setItems] = useState([
     {
       url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
