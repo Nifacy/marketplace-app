@@ -31,6 +31,13 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+@app.get("/supplier/me", response_model=schemas.Supplier)
+async def get_current_supplier(user: DependsAuth):
+    if not isinstance(user, schemas.Supplier):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return user
+
+
 @app.get("/suppliers/{supplier_id}", response_model=schemas.Supplier)
 async def get_supplier_endpoint(conn: DependsDBConnection, supplier_id: int):
     _supplier = supplier.get_supplier(conn, supplier_id)
@@ -119,8 +126,15 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
         )
 
 
+@app.get("/customer/me", response_model=schemas.Customer)
+async def get_current_customer(user: DependsAuth):
+    if not isinstance(user, schemas.Customer):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return user
+
+
 @app.get("/customer/{id}", response_model=schemas.Customer)
-async def get_customer_endpoint(conn: DependsDBConnection, user: DependsAuth, id: int):
+async def get_customer_endpoint(conn: DependsDBConnection, id: int):
     try:
         return customer.get_customer(conn, id)
     except customer.CustomerNotFound:
@@ -159,21 +173,3 @@ async def get_product_by_id(conn: DependsDBConnection, user: DependsAuth, id: in
         _product.in_favorites = _product.id in favorites.get_favorites(conn, user.id)
     
     return _products[0]
-
-
-@app.get("/supplier/me", response_model=schemas.Supplier)
-async def get_current_supplier(conn: DependsDBConnection, user: schemas.Supplier = Depends(DependsAuth)):
-    try:
-        _supplier = supplier.get_supplier(conn, user.id)
-    except supplier.SupplierNotFound:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return _supplier
-
-
-@app.get("/customer/me", response_model=schemas.Customer)
-async def get_current_customer(conn: DependsDBConnection, user: schemas.Customer = Depends(DependsAuth)):
-    try:
-        _customer = customer.get_customer(conn, user.id)
-    except customer.CustomerNotFound:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return _customer
