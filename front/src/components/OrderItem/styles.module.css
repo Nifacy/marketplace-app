@@ -1,0 +1,22 @@
+.card {
+  width: 1000px;
+  height: 160px;
+  border: 2px solid gray;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card img {
+  max-width: 250px;
+  max-height: 130px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -1,25 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContentLoader from "react-content-loader";
 import styles from "./styles.module.css";
 
 export const CardItem = (props) => {
   const { name, price, url, isLoading = false } = props;
-  //   const { isItemAdded, isItemFavorited } = useContext(AppContext);
   const [fav, setFav] = useState(false);
 
-  //   const obj = { id, title, price, imageUrl };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const resp = await fetch(`http://localhost:3000/item/:id/favorite`).then((res) => res.json()); // запрос избранного
+        setFav(resp);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
 
-  //   const handleClickPlus = () => {
-  //     onClickPlus(obj);
-  //   };
-
-  //   const handleClickFavorite = () => {
-  //     onClickFavorite(obj);
-  //   };
-
-  const handleOnChnageFavorite = (event) => {
-    setFav(!fav);
-  };
+  async function handleOnChnageFavorite() {
+    try {
+      if (fav) {
+        // запрос на удаление из избранного
+      } else {
+        // запрос на добавление в избранное
+      }
+      setFav(!fav);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div>
