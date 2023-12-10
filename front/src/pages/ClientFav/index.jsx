@@ -4,6 +4,8 @@ import styles from "./styles.module.css";
 import { Nav } from "../../components/Nav";
 import { CardItem } from "../../components/CardItem";
 
+import { api } from "../../api"
+
 export const ClientFav = () => {
   const [items, setItems] = useState([
     {
@@ -18,8 +20,19 @@ export const ClientFav = () => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const items = await fetch(`http://localhost:3000/favoriteItems`).then((res) => res.json());
-        setItems(items);
+        let productItems = [];
+
+        for (const product of await api.getFavorites()) {
+          productItems.push({
+            productId: product.id,
+            url: product.info.images[0],
+            name: product.info.product_name,
+            price: product.info.price,
+            initialFav: product.in_favorites,
+          });
+        }
+
+        setItems(productItems);
       } catch (error) {
         console.log(error);
       } finally {
