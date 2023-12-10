@@ -1,4 +1,4 @@
-import * as auth from "./auth";
+import * as auth from "./fake/auth";
 import * as exception from "./exceptions";
 
 

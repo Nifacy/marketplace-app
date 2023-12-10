@@ -1,5 +1,5 @@
-import * as config from "./config"
-import * as exceptions from "./exceptions"
+import * as config from "../config"
+import * as exceptions from "../exceptions"
 
 
 export async function registerCustomer(registerForm) {
