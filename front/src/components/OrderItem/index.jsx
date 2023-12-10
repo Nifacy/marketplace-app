@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
+import { Navigation } from "../../App";
 
 export const OrderItem = (props) => {
-  const { order, price, description, url } = props;
+  const { isClient, clientId, customerId, orderId, setOrderId } = useContext(Navigation);
+
+  const { id, order, price, description, url } = props;
+
+  setOrderId(id);
+  const itemPath = isClient ? `/client/${clientId}/order/${orderId}` : `/customer/${customerId}/order/${orderId}`;
 
   return (
     <div className={styles.card}>
@@ -12,7 +19,9 @@ export const OrderItem = (props) => {
         <h5>{price} $</h5>
       </div>
       <div>
-        <img alt="1" src={url} />
+        <Link to={itemPath}>
+          <img alt="1" src={url} />
+        </Link>
       </div>
     </div>
   );

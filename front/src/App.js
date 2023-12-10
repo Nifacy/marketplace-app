@@ -20,6 +20,7 @@ function App() {
   const [clientId, setClientId] = useState();
   const [customerId, setCustomerId] = useState();
   const [itemId, setItemId] = useState();
+  const [orderId, setOrderId] = useState();
 
   return (
     <Navigation.Provider
@@ -32,6 +33,8 @@ function App() {
         setCustomerId,
         itemId,
         setItemId,
+        orderId,
+        setOrderId,
       }}
     >
       <Routes>
@@ -47,7 +50,6 @@ function App() {
           <Route path="/customer/:id/orders" element={<Orders />} />
           <Route path="/client/:id/item/:id" element={<FullCardItem />} />
           <Route path="/customer/:id/item/:id" element={<FullCardItem />} />
-          {/* FullCardItem */}
           <Route path="/customer/:id/item/:id/edit" element={<FullCardEdit />} />
           {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
