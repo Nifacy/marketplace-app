@@ -12,6 +12,7 @@ import { Orders } from "./pages/Orders";
 import { FullCardItem } from "./pages/FullCardItem";
 import { FullCardEdit } from "./pages/FullCardEdit";
 import { Customer } from "./pages/Customer";
+import { FullOrderItem } from "./pages/FullOrderItem";
 
 export const Navigation = createContext(null);
 
@@ -50,6 +51,8 @@ function App() {
           <Route path="/customer/:id/orders" element={<Orders />} />
           <Route path="/client/:id/item/:id" element={<FullCardItem />} />
           <Route path="/customer/:id/item/:id" element={<FullCardItem />} />
+          <Route path="/client/:id/order/:id" element={<FullOrderItem />} />
+          <Route path="/customer/:id/order/:id" element={<FullOrderItem />} />
           <Route path="/customer/:id/item/:id/edit" element={<FullCardEdit />} />
           {/* проверить можно ли два id */}
           {/* <Route path="*" element={<NotFound />} /> */}
