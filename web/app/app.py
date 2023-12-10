@@ -118,21 +118,17 @@ async def login_customer(conn: DependsDBConnection, credentials: schemas.Custome
             detail="Wrong login or password",
         )
 
-# TODO: add
-# user: Annotated[schemas.Supplier | schemas.Customer, Depends(get_current_user)]
-# to the list of arguments
+
 @app.get("/customer/{id}", response_model=schemas.Customer)
-async def get_customer_endpoint(
-    conn: DependsDBConnection, 
-    id: int
-    ):
+async def get_customer_endpoint(conn: DependsDBConnection, user: DependsAuth, id: int):
     try:
         return customer.get_customer(conn, id)
     except customer.CustomerNotFound:
         raise HTTPException(status_code=404, detail="Customer not found")
 
+
 @app.get("/product")
-async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str | None = None) -> list[schemas.Product]:
+async def get_products(conn: DependsDBConnection, user: DependsAuth, name: str | None = None) -> list[schemas.Product]:
     _products = product.get_products(conn, product.SearchFilters(name=name))
     
     if isinstance(user, schemas.Customer):
@@ -148,7 +144,7 @@ async def get_products(user: DependsAuth, conn: DependsDBConnection, name: str |
 
 
 @app.get("/product/{id}", response_model=schemas.Product)
-async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: int):
+async def get_product_by_id(conn: DependsDBConnection, user: DependsAuth, id: int):
     _products = product.get_products(conn, product.SearchFilters(product_id=id))
 
     if len(_products) == 0:
@@ -164,3 +160,20 @@ async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: in
     
     return _products[0]
 
+
+@app.get("/supplier/me", response_model=schemas.Supplier)
+async def get_current_supplier(conn: DependsDBConnection, user: schemas.Supplier = Depends(DependsAuth)):
+    try:
+        _supplier = supplier.get_supplier(conn, user.id)
+    except supplier.SupplierNotFound:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return _supplier
+
+
+@app.get("/customer/me", response_model=schemas.Customer)
+async def get_current_customer(conn: DependsDBConnection, user: schemas.Customer = Depends(DependsAuth)):
+    try:
+        _customer = customer.get_customer(conn, user.id)
+    except customer.CustomerNotFound:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return _customer
