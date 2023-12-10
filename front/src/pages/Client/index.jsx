@@ -11,6 +11,7 @@ export const Client = () => {
       url: "https://gas-kvas.com/uploads/posts/2023-02/1675489758_gas-kvas-com-p-izobrazheniya-i-kartinki-na-fonovii-risuno-41.jpg",
       name: "qweqweqwe",
       price: 123,
+      // В CARDITEM ПЕРЕДАЕТСЯ ID, важно!
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);

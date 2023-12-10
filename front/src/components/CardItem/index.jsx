@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ContentLoader from "react-content-loader";
 import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
+import { Navigation } from "../../App";
 
 export const CardItem = (props) => {
-  const { name, price, url, isLoading = false } = props;
+  const { isClient, itemId, setItemId, clientId, customerId } = useContext(Navigation);
+  const { id, name, price, url, isLoading = false } = props;
   const [fav, setFav] = useState(false);
+  
+  setItemId(id);
+  const itemPath = isClient ? `/client/${clientId}/item/${itemId}` : `/customer/${customerId}/item/${itemId}`;
 
   useEffect(() => {
     async function fetchData() {
@@ -52,7 +58,9 @@ export const CardItem = (props) => {
       ) : (
         <>
           <div className={styles.card}>
-            <img alt="1" src={url} />
+            <Link to={itemPath}>
+              <img alt="1" src={url} />
+            </Link>
             <div className={styles.info}>
               <div>
                 <h5>{name}</h5>
