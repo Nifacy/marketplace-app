@@ -3,9 +3,10 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
 import psycopg2.extensions
+from pydantic import ValidationError
 
 from . import database, schemas
-from .usecases import customer, oauth2, supplier, product, favorites
+from .usecases import customer, oauth2, supplier, product, favorites, orders
 from .dependencies import database, get_current_user
 
 
@@ -173,3 +174,28 @@ async def get_product_by_id(user: DependsAuth, conn: DependsDBConnection, id: in
         _product.in_favorites = _product.id in favorites.get_favorites(conn, user.id)
     
     return _products[0]
+
+
+@app.get("/order/{id}", response_model=schemas.Order)
+async def get_order(user: DependsAuth, conn: DependsDBConnection, id: int):
+    if not isinstance(user, (schemas.Supplier, schemas.Customer)):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        return orders._get_order(conn, id)
+    except orders.OrderNotFound:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+
+@app.put("/order/{id}", response_model=schemas.Order)
+async def update_order(user: DependsAuth, conn: DependsDBConnection, id: int, status: schemas.OrderStatus):
+    if not isinstance(user, (schemas.Supplier, schemas.Customer)):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        return orders.update_order_status(conn, id, status)
+    except orders.OrderNotFound:
+        raise HTTPException(status_code=404, detail="Order not found")
+    except ValidationError:
+        raise HTTPException(status_code=422, detail="Invalid data format")
+
